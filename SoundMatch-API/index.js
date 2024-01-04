@@ -11,6 +11,10 @@ app.use(express.json());
 
 app.use("/", auth)
 
+app.get("/home", function (req, res) {
+  res.status(200).send("Welcome to the Home Page")
+});
+
 app.listen(port, () => {
   console.log("App is running on http://localhost:" + port);
 });
