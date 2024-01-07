@@ -7,11 +7,10 @@ import Login from './Login';
 
 const Register = ({navigation}, props) => {
     const [isPasswordShown, setPasswordShown] = useState(false);
-    const [isChecked, setIsChecked] = useState(false);
     return (
         <SafeAreaView style={{flex:1}}>
             <View style={{flex:1, marginHorizontal:22}}>
-                <View style={{flex:0.5, marginHorizontal:22}}>
+                <View style={{flex:1, marginHorizontal:22}}>
                     <Text style={{
                         fontSize:22,
                         fontWeight: 'bold',
