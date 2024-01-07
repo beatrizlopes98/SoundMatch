@@ -6,10 +6,10 @@ import { Image } from 'react-native';
 import Login from './Login';
 
 const Register = ({navigation}, props) => {
-    const [isPasswordShown, setPasswordShown] = useState(false);
+    const [isPasswordShown, setPasswordShown] = useState(true);
     return (
         <SafeAreaView style={{flex:1}}>
-            <View style={{flex:1, marginHorizontal:22}}>
+            <View style={{flex:0.8, marginHorizontal:22}}>
                 <View style={{flex:1, marginHorizontal:22}}>
                     <Text style={{
                         fontSize:22,
@@ -101,18 +101,19 @@ const Register = ({navigation}, props) => {
                             position: "absolute",
                             right: 12
                         }}>
-                            {
+                             {
                                 isPasswordShown == true ? (
-                                    <Image source={require('../assets/hide.png')} style={{height:24, width:24 }}></Image>
-                                ): (
                                     <Image source={require('../assets/view.png')} style={{height:24, width:24 }}></Image>
+                                    
+                                ): (
+                                    <Image source={require('../assets/hide.png')} style={{height:24, width:24 }}></Image>
                                 )
                             }
                         </TouchableOpacity>
                     </View>
                 </View>
                 <Button
-                title='Sign Up'/>
+                title='Sign Up' color={COLORS.purple}/>
 
                 <View style={{ flexDirection: 'row', alignItems:'center', marginVertical:20}}>
                     <View style={{
