@@ -5,11 +5,10 @@ const { handleError } = require("./error");
 const secret = process.env.SECRET;
 
 const googleConfig = {
-  //clientId:"829313020638-tikb0uqdo4uev1okfmji5ajbsegg3mt4.apps.googleusercontent.com",
-  //clientSecret:"OFgE5UUNz-ZUE05SZqhQ4bfP",
-  clientId:"313000397225-o06na9kdk28vnl7u019p163lpcsdqf50.apps.googleusercontent.com",
-  clientSecret:"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",
-  redirect: "http://localhost:3000/home",
+  clientId:
+    "313000397225-o06na9kdk28vnl7u019p163lpcsdqf50.apps.googleusercontent.com",
+  clientSecret: "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",
+  redirect: "http://localhost:3000/login",
 };
 
 const defaultScope = [
@@ -25,23 +24,22 @@ exports.generateJSWToken = (user_info, callback) => {
     secret,
     { expiresIn: "24h" }
   );
-  console.log("JWT Token Generated:", token);
   return callback(token);
 };
 
-exports.validateJSWToken = (token, callback) => {
-  if (!token) {
-    console.log("JWT Token Validation Failed: Token is missing");
-    return callback(false);
-  }
-  jwt.verify(token.replace("Bearer ", ""), secret, function (error, decoded) {
-    if (error) {
-      console.log("JWT Token Validation Failed:", error);
-      return callback(false);
-    } else {
-      console.log("JWT Token Validated Successfully:", decoded);
-      return callback(true);
+exports.validateJSWToken = (token) => {
+  return new Promise((resolve, reject) => {
+    if (!token) {
+      reject("Token is missing");
     }
+
+    jwt.verify(token.replace("Bearer ", ""), secret, function (error, decoded) {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(decoded);
+      }
+    });
   });
 };
 
@@ -62,33 +60,23 @@ const getConnectionUrl = (auth) =>
 const urlGoogle = () => {
   const auth = createConnection();
   const url = getConnectionUrl(auth);
-  console.log("Generated Google OAuth URL:", url);
   return url;
 };
 
-const getTokens = (code, callback) => {
+const getTokens = (code, req, res, callback) => {
   const auth = createConnection();
-  auth
-    .getToken(code)
-    .then((tokens) => {
-      if (!tokens.tokens) {
-        return handleError(
-          callback,
-          500,
-          "Error getting tokens: No tokens found"
-        );
-      } else {
-        console.log("Tokens Obtained Successfully:", tokens.tokens);
-        return callback(false, tokens.tokens);
-      }
-    })
-    .catch((error) => {
-      return handleError(
-        callback,
-        500,
-        `Error getting tokens: ${error.message}`
-      );
-    });
+  auth.getToken(code, (error, tokens) => {
+    if (error) {
+      //return callback(true, error);
+      return handleError(res, 500, `Error getting tokens: ${error.message}`);
+    }
+
+    if (!tokens) {
+      //return callback(true, error);
+      return handleError(res, 500, "Error getting tokens: No tokens found");
+    }
+    return callback(false, tokens);
+  });
 };
 
 const getUserInfo = (access_token, callback) => {
@@ -98,15 +86,10 @@ const getUserInfo = (access_token, callback) => {
     auth: client,
     version: "v2",
   });
-  oauth2.userinfo.get(function (err, result) {
-    if (err) {
-      return handleError(
-        callback,
-        500,
-        `Error getting user info: ${err.message}`
-      );
+  oauth2.userinfo.get(function (error, result) {
+    if (error) {
+      return callback(true, error);
     } else {
-      console.log("User Info Obtained Successfully:", result.data);
       return callback(false, result.data);
     }
   });
@@ -114,23 +97,23 @@ const getUserInfo = (access_token, callback) => {
 
 const validateToken = (token, callback) => {
   let client = new google.auth.OAuth2(googleConfig.clientId);
-  async function verify() {
-    let ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: googleConfig.clientId,
-    });
+  return new Promise(async (resolve, reject) => {
+    try {
+      async function verify() {
+        let ticket = await client.verifyIdToken({
+          idToken: token,
+          audience: googleConfig.clientId,
+        });
 
-    let payload = ticket.getPayload();
-    console.log("Google OAuth Token Validated Successfully:", payload);
-    return callback(false, payload);
-  }
-
-  verify().catch((error) => {
-    return handleError(
-      callback,
-      500,
-      `Error validating token: ${error.message}`
-    );
+        let payload = ticket.getPayload();
+        return callback(false, payload);
+      }
+      verify().catch((error) => {
+        return callback(true, error);
+      });
+    } catch (error) {
+      reject(`Error validating token: ${error.message}`);
+    }
   });
 };
 

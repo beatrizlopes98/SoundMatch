@@ -7,39 +7,26 @@ const saltRounds = 10;
 const users = require("../Models/user").users;
 
 exports.login = async function (req, res) {
-  // Handle login based on the presence of req.query.code
-  if (req.query.code) {
-    utilities.getTokens(req.query.code, (error, tokens) => {
-      if (error) {
-        handleError(res, 400, error);
-      } else {
-        utilities.getUserInfo(tokens.access_token, (error, user_info) => {
-          if (error) {
-            handleError(res, 400, error);
-          } else {
-            utilities.validateToken(tokens.id_token, (error, validToken) => {
-              if (error) {
-                handleError(res, 400, error);
-              } else {
-                res.status(200).send({
-                  tokens: tokens,
-                  user: user_info,
-                  validToken: validToken,
-                });
-              }
-            });
-          }
-        });
-      }
-    });
-  } else {
-    try {
-      if (!req.body.email) {
-        return handleError(res, 400, "Email is required");
-      }
+  try {
 
-      if (!req.body.password) {
-        return handleError(res, 400, "Password is required");
+    console.log(req.query.code)
+    console.log(req.body)
+
+    if (req.query.code) {
+      // Google API login flow
+      const tokens = await utilities.getTokens(req.query.code);
+      const user_info = await utilities.getUserInfo(tokens.access_token);
+      const validToken = await utilities.validateToken(tokens.id_token);
+
+      res.status(200).send({
+        tokens: tokens,
+        user: user_info,
+        validToken: validToken,
+      });
+    } else {
+      // Regular email/password login
+      if (!req.body.email || !req.body.password) {
+        return handleError(res, 400, "Email and password are required");
       }
 
       let user = {
@@ -53,21 +40,21 @@ exports.login = async function (req, res) {
         handleError(res, 401, "User not found");
       }
 
-      const isPasswordHashed = bcrypt.compareSync(
+      const isPasswordValid = bcrypt.compareSync(
         req.body.password,
         foundUser.password
       );
 
-      if (isPasswordHashed || req.body.password === foundUser.password) {
+      if (isPasswordValid) {
         utilities.generateJSWToken({ user: req.body.email }, (token) => {
           res.status(200).json({ token: token });
         });
       } else {
         handleError(res, 401, "Not Authorized");
       }
-    } catch (error) {
-      handleError(res, 500, `Error trying to Login: ${error}`);
     }
+  } catch (error) {
+    handleError(res, 500, `Error trying to Login: ${error}`);
   }
 };
 
