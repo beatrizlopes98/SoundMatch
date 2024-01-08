@@ -1,8 +1,8 @@
-const handleError = (res, statusCode, message) => {
-  console.error(`Error ${statusCode}: ${message}`);
-  return res.status(statusCode).send({ code: statusCode, message: message });
-};
+exports.handleError = function (res, statusCode, message) {
+  if (!res || !res.status || !res.send) {
+    console.error(`Error: ${message}`);
+    return;
+  }
 
-module.exports = {
-  handleError,
+  return res.status(statusCode).send({ code: statusCode, message: message });
 };

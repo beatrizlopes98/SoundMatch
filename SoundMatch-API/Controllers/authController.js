@@ -8,22 +8,34 @@ const users = require("../Models/user").users;
 
 exports.login = async function (req, res) {
   try {
-
-    console.log(req.query.code)
-    console.log(req.body)
-
     if (req.query.code) {
-      // Google API login flow
-      const tokens = await utilities.getTokens(req.query.code);
-      const user_info = await utilities.getUserInfo(tokens.access_token);
-      const validToken = await utilities.validateToken(tokens.id_token);
 
-      res.status(200).send({
-        tokens: tokens,
-        user: user_info,
-        validToken: validToken,
+      // Google API login flow
+      utilities.getTokens(req.query.code, req, res, (error, tokens) => {
+        if (error) {
+          handleError(res, 400, error);
+        } else {
+          utilities.getUserInfo(tokens.access_token, (error, user_info) => {
+            if (error) {
+              handleError(res, 400, error);
+            } else {
+              utilities.validateToken(tokens.id_token, (error, validToken) => {
+                if (error) {
+                  handleError(res, 400, error);
+                } else {
+                  res.status(200).send({
+                    user: user_info,
+                    email: user_info.email
+                  });
+                }
+              });
+            }
+          });
+        }
       });
+
     } else {
+      
       // Regular email/password login
       if (!req.body.email || !req.body.password) {
         return handleError(res, 400, "Email and password are required");
@@ -47,7 +59,10 @@ exports.login = async function (req, res) {
 
       if (isPasswordValid) {
         utilities.generateJSWToken({ user: req.body.email }, (token) => {
-          res.status(200).json({ token: token });
+          res.status(200).json({ 
+            token: token,
+            email: foundUser.email
+          });
         });
       } else {
         handleError(res, 401, "Not Authorized");
@@ -59,19 +74,6 @@ exports.login = async function (req, res) {
 };
 
 exports.register = function (req, res) {
-  // Check for required fields
-  if (!req.body.name) {
-    return handleError(res, 400, "Name is required");
-  }
-
-  if (!req.body.email) {
-    return handleError(res, 400, "Email is required");
-  }
-
-  if (!req.body.password) {
-    return handleError(res, 400, "Password is required");
-  }
-
   const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds);
 
   users
@@ -93,8 +95,6 @@ exports.register = function (req, res) {
       users
         .create(newUser)
         .then((createdUser) => {
-          console.log(newUser);
-          console.log(createdUser);
           const user_info = { email: createdUser.email };
           generateJSWToken(user_info, (token) => {
             res.status(201).json({ accessToken: token, user: createdUser });
