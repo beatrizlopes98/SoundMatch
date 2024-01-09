@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import COLORS from '../constants/colors';
 import { Image } from 'react-native';
 import Login from './Login';
+import Match from './Match';
 
 const Register = ({navigation}, props) => {
     const [isPasswordShown, setPasswordShown] = useState(true);
@@ -102,7 +103,7 @@ const Register = ({navigation}, props) => {
                             right: 12
                         }}>
                              {
-                                isPasswordShown == true ? (
+                                isPasswordShown == false ? (
                                     <Image source={require('../assets/view.png')} style={{height:24, width:24 }}></Image>
                                     
                                 ): (
@@ -113,7 +114,7 @@ const Register = ({navigation}, props) => {
                     </View>
                 </View>
                 <Button
-                title='Sign Up' color={COLORS.purple}/>
+                title='Sign Up' color={COLORS.purple} onPress={()=> { navigation.navigate("Match")}}/>
 
                 <View style={{ flexDirection: 'row', alignItems:'center', marginVertical:20}}>
                     <View style={{
