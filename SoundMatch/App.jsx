@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Text, View} from 'react-native';
+import {Text, View, Image} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -11,10 +11,26 @@ const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Match" component={Match} options={{headerShown:false}} />
-      <Tab.Screen name="Playlists" component={Playlists} options={{headerShown:false}}/>
-      <Tab.Screen name="Discover" component={Discover} options={{headerShown:false}}/>
+    <Tab.Navigator screenOptions={{
+      headerShown: false,
+      gestureEnabled: true,
+      gestureDirection: 'horizontal',
+      tabBarActiveTintColor: COLORS.lavanda,
+      tabBarStyle: {
+        height:'7%',
+        backgroundColor: COLORS.black,
+        borderTopWidth:0
+      },
+    }} >
+      <Tab.Screen name="Discover" component={Discover} options={{headerShown:false, tabBarIcon:({focused})=>(
+        <Image source={require('./assets/search.png')} style={{width:32, height:32, tintColor: COLORS.lavanda}}></Image>
+      )}} />
+        <Tab.Screen  name="Match" component={Match} options={{headerShown:false, tabBarIcon:({focused})=>(
+          <Image source={require('./assets/plus.png')} style={{width:32, height:32, tintColor: COLORS.lavanda}}></Image>
+        )}} />
+        <Tab.Screen name="Playlists" component={Playlists} options={{headerShown:false,tabBarIcon:({focused})=>(
+        <Image source={require('./assets/playlist.png')} style={{width:32, height:32, tintColor: COLORS.lavanda}}></Image>
+        )}} />
     </Tab.Navigator>
   );
 };
@@ -55,7 +71,7 @@ function App() {
           name='MainTabs'
           component={TabNavigator}
           options={{
-            headerShown: false
+            headerShown: false,
           }}
         />
 
