@@ -3,11 +3,24 @@ import React, {useState} from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import COLORS from '../constants/colors';
 import Register from './Register';
+import Match from './Match';
 import { Image } from 'react-native';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const Login = ({navigation}, props) => {
     const [isPasswordShown, setPasswordShown] = useState(true);
+    const handleLogin = () => {
+        // Perform login authentication here
+        // Example: For demonstration purposes, directly setting isLoggedIn to true
+        // Replace this with your actual authentication logic
+        const isLoggedIn = true; // Assuming login is successful
+    
+        if (isLoggedIn) {
+          // Navigate to the bottom tab navigator
+          navigation.navigate('MainTabs');
+        } else {
+          // Handle failed login or show error message
+        }
+      };
     return (
         <SafeAreaView style={{flex:1}}>
             <View style={{flex:0.7, marginHorizontal:22}}>
@@ -81,7 +94,7 @@ const Login = ({navigation}, props) => {
                             right: 12
                         }}>
                             {
-                                isPasswordShown == true ? (
+                                isPasswordShown == false? (
                                     <Image source={require('../assets/view.png')} style={{height:24, width:24 }}></Image>
                                     
                                 ): (
@@ -92,7 +105,7 @@ const Login = ({navigation}, props) => {
                     </View>
                 </View>
                 <Button
-                title='Login' color={COLORS.purple}/>
+                title='Login' color={COLORS.purple} onPress={handleLogin}/>
 
                 <View style={{ flexDirection: 'row', alignItems:'center', marginVertical:20}}>
                     <View style={{
