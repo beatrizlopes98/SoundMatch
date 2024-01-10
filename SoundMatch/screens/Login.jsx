@@ -11,20 +11,29 @@ const Login = ({navigation}, props) => {
     const [isPasswordShown, setPasswordShown] = useState(true);
     const handleGoogleSignIn = async () => {
         try {
-    // Make a network request to your API to get the Google sign-in link
-          const response = await fetch('http://localhost:3000/google');
+            console.log('gato')
+          // Make a network request to your API to get the Google sign-in link
+          const response = await fetch('http://localhost:3000/google', {
+            method: 'GET',
+            // Add headers if required by your API (e.g., authorization headers)
+            headers: {
+              'Content-Type': 'application/json',
+              // Add any other headers needed by your API
+            },
+          });
           
           if (response.ok) {
             const { signInLink } = await response.json();
-            console.log(signInLink);
     
-            // Redirect the user to the obtained sign-in link
-            // You can open it in a WebView or redirect to an external browser
-            // Here, for demonstration, let's navigate to a WebView screen passing the sign-in link
+            // Log the received sign-in link
+            console.log('Received Sign-In Link:', signInLink);
+    
+            // Handle the received link as needed (navigate to a WebView or browser)
+            // For demonstration, navigate to a WebView passing the sign-in link
             navigation.navigate('WebViewScreen', { url: signInLink });
           } else {
-            // Handle error cases for failed API response
-            console.error('Failed to fetch sign-in link');
+            // Handle non-OK response status (e.g., server error, bad request)
+            console.error('Failed to fetch sign-in link:', response.status);
           }
         } catch (error) {
           // Handle network errors or other exceptions
