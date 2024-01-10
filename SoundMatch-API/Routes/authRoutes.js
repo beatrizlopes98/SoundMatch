@@ -20,7 +20,10 @@ router.post("/login", (req, res) => {
 // Google login route
 router.get("/google", (req, res) => {
   console.log("Get Google");
-  res.redirect(utilities.urlGoogle());
+  res.status(200).json({
+    urlGoogle: utilities.urlGoogle()
+  })
+  //res.redirect(utilities.urlGoogle());
 });
 
 // Route to handle Google OAuth2.0 callback

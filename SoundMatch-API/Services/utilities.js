@@ -60,6 +60,7 @@ const getConnectionUrl = (auth) =>
 const urlGoogle = () => {
   const auth = createConnection();
   const url = getConnectionUrl(auth);
+  //console.log(url)
   return url;
 };
 
