@@ -9,7 +9,6 @@ const users = require("../Models/user").users;
 exports.login = async function (req, res) {
   try {
     if (req.query.code) {
-
       // Google API login flow
       utilities.getTokens(req.query.code, req, res, (error, tokens) => {
         if (error) {
@@ -23,9 +22,11 @@ exports.login = async function (req, res) {
                 if (error) {
                   handleError(res, 400, error);
                 } else {
-                  res.status(200).send({
-                    user: user_info,
-                    email: user_info.email
+                  utilities.generateJSWToken({ user: user_info.email }, (token) => {
+                    res.status(200).json({
+                      token: token,
+                      email: user_info.email,
+                    });
                   });
                 }
               });
@@ -33,9 +34,7 @@ exports.login = async function (req, res) {
           });
         }
       });
-
     } else {
-      
       // Regular email/password login
       if (!req.body.email || !req.body.password) {
         return handleError(res, 400, "Email and password are required");
@@ -59,9 +58,9 @@ exports.login = async function (req, res) {
 
       if (isPasswordValid) {
         utilities.generateJSWToken({ user: req.body.email }, (token) => {
-          res.status(200).json({ 
+          res.status(200).json({
             token: token,
-            email: foundUser.email
+            email: foundUser.email,
           });
         });
       } else {
@@ -96,7 +95,7 @@ exports.register = function (req, res) {
         .create(newUser)
         .then((createdUser) => {
           const user_info = { email: createdUser.email };
-          generateJSWToken(user_info, (token) => {
+          utilities.generateJSWToken(user_info, (token) => {
             res.status(201).json({ accessToken: token, user: createdUser });
           });
         })

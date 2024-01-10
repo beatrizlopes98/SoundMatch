@@ -6,7 +6,11 @@ const authController = require("../Controllers/authController");
 const authValidation = require("../Services/validation");
 
 // Normal registration and login routes
-router.post("/register", authValidation.validateRegistration, authController.register);
+router.post(
+  "/register",
+  authValidation.validateRegistration,
+  authController.register
+);
 
 router.post("/login", (req, res) => {
   console.log("Post Login");

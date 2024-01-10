@@ -49,7 +49,7 @@ const createConnection = () =>
     googleConfig.clientSecret,
     googleConfig.redirect
   );
-
+//Enviar para front-end
 const getConnectionUrl = (auth) =>
   auth.generateAuthUrl({
     access_type: "offline",
