@@ -4,7 +4,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import COLORS from './constants/colors'
-import {Login, Register, LoadingPage, Match, Playlists, Discover} from './screens';
+import {Login, Register, LoadingPage, Match, Playlists, Discover, WebViewScreen} from './screens';
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator();
@@ -66,6 +66,13 @@ function App() {
           headerShown:false,
           contentStyle: {backgroundColor: COLORS.lavanda}
         }}
+        />
+        <Stack.Screen
+          name='WebViewScreen'
+          component={WebViewScreen}
+          options={{
+            headerShown: false,
+          }}
         />
         <Stack.Screen
           name='MainTabs'

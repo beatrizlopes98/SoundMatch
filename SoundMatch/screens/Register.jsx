@@ -68,7 +68,6 @@ const Register = ({navigation}, props) => {
                         <TextInput 
                         placeholder='Enter your name'
                         placeholderTextColor={COLORS.black}
-                        keyboardType='email-adress'
                         style={{
                             width: "100%"
                         }}/>

@@ -5,39 +5,26 @@ import COLORS from '../constants/colors';
 import Register from './Register';
 import Match from './Match';
 import { Image } from 'react-native';
+import WebViewScreen from './WebViewScreen';
 
 
 const Login = ({navigation}, props) => {
     const [isPasswordShown, setPasswordShown] = useState(true);
     const handleGoogleSignIn = async () => {
         try {
-            console.log('gato')
-          // Make a network request to your API to get the Google sign-in link
-          const response = await fetch('http://localhost:3000/google', {
-            method: 'GET',
-            // Add headers if required by your API (e.g., authorization headers)
-            headers: {
-              'Content-Type': 'application/json',
-              // Add any other headers needed by your API
-            },
-          });
+          const response = await fetch("http://172.23.114.98:3000/google");
           
           if (response.ok) {
-            const { signInLink } = await response.json();
-    
-            // Log the received sign-in link
-            console.log('Received Sign-In Link:', signInLink);
-    
-            // Handle the received link as needed (navigate to a WebView or browser)
-            // For demonstration, navigate to a WebView passing the sign-in link
-            navigation.navigate('WebViewScreen', { url: signInLink });
+            const responseData = await response.json();
+            const  {urlGoogle}  = responseData;
+            console.log(urlGoogle);
+      
+            navigation.navigate("WebViewScreen", { url: urlGoogle });
           } else {
-            // Handle non-OK response status (e.g., server error, bad request)
-            console.error('Failed to fetch sign-in link:', response.status);
+            console.error("Failed to fetch sign-in link");
           }
         } catch (error) {
-          // Handle network errors or other exceptions
-          console.error('Error while fetching sign-in link:', error);
+          console.error("Error while fetching sign-in link:", error);
         }
       };
     const handleLogin = () => {
@@ -91,7 +78,6 @@ const Login = ({navigation}, props) => {
                         <TextInput 
                         placeholder='Enter your email'
                         placeholderTextColor={COLORS.black}
-                        keyboardType='email-adress'
                         style={{
                             width: "100%"
                         }}/>
