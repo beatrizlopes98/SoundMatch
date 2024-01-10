@@ -89,7 +89,6 @@ const Login = ({navigation}, props) => {
             <TextInput
               placeholder="Enter your email"
               placeholderTextColor={COLORS.black}
-              keyboardType="email-adress"
               style={{
                 width: '100%',
               }}
