@@ -3,8 +3,6 @@ import React, {useState} from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import COLORS from '../constants/colors';
 import { Image } from 'react-native';
-import Login from './Login';
-import Match from './Match';
 
 const Register = ({navigation}, props) => {
     const [isPasswordShown, setPasswordShown] = useState(true);

@@ -9,8 +9,6 @@ import {
 import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import COLORS from '../constants/colors';
-import Register from './Register';
-import Match from './Match';
 import {Image, Linking} from 'react-native';
 
 const Login = ({navigation}, props) => {
