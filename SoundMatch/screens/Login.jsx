@@ -6,8 +6,31 @@ import Register from './Register';
 import Match from './Match';
 import { Image } from 'react-native';
 
+
 const Login = ({navigation}, props) => {
     const [isPasswordShown, setPasswordShown] = useState(true);
+    const handleGoogleSignIn = async () => {
+        try {
+    // Make a network request to your API to get the Google sign-in link
+          const response = await fetch('http://localhost:3000/google');
+          
+          if (response.ok) {
+            const { signInLink } = await response.json();
+            console.log(signInLink);
+    
+            // Redirect the user to the obtained sign-in link
+            // You can open it in a WebView or redirect to an external browser
+            // Here, for demonstration, let's navigate to a WebView screen passing the sign-in link
+            navigation.navigate('WebViewScreen', { url: signInLink });
+          } else {
+            // Handle error cases for failed API response
+            console.error('Failed to fetch sign-in link');
+          }
+        } catch (error) {
+          // Handle network errors or other exceptions
+          console.error('Error while fetching sign-in link:', error);
+        }
+      };
     const handleLogin = () => {
         // Perform login authentication here
         // Example: For demonstration purposes, directly setting isLoggedIn to true
@@ -129,7 +152,7 @@ const Login = ({navigation}, props) => {
                     justifyContent: 'center'
                 }}>
                     <TouchableOpacity
-                    onPress={()=> console.log("Pressed")}
+                    onPress={handleGoogleSignIn}
                     style={{
                         flex:1,
                         alignItems: 'center',
