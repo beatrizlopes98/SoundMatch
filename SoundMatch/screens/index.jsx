@@ -4,7 +4,6 @@ import Register from "./Register";
 import Match from "./Match";
 import Discover from "./Discover";
 import Playlists from "./Playlists";
-import WebViewScreen from "./WebViewScreen";
 
 export{
     Login,
@@ -12,6 +11,5 @@ export{
     LoadingPage,
     Match,
     Discover,
-    Playlists,
-    WebViewScreen
+    Playlists
 }

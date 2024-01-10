@@ -11,7 +11,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import COLORS from '../constants/colors';
 import Register from './Register';
 import Match from './Match';
-import {Image} from 'react-native';
+import {Image, Linking} from 'react-native';
 
 const Login = ({navigation}, props) => {
   const [isPasswordShown, setPasswordShown] = useState(true);
@@ -23,9 +23,7 @@ const Login = ({navigation}, props) => {
         const responseData = await response.json();
         const {urlGoogle} = responseData;
 
-        console.log(urlGoogle);
-
-        navigation.navigate('WebViewScreen', {url: urlGoogle});
+        await Linking.openURL(urlGoogle)
       } else {
         console.error('Failed to fetch sign-in link');
       }
