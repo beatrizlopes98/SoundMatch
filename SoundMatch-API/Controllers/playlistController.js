@@ -1,19 +1,28 @@
 const { handleError } = require("../Services/error");
-const { playlists } = require("../Models/playlist").playlists; // Assuming you have a playlist model
+
+const playlists = require("../Models/playlist").playlists;
+const users = require("../Models/user").users;
 
 exports.createPlaylist = async function (req, res) {
   try {
-    const { title, imageCover } = req.body;
-    const user = req.user; // Assuming the user information is stored in req.user
+    const { title } = req.body;
 
-    // Create a new playlist
-    const newPlaylist = new playlists({
+    const user = await users.findOne({ email: req.user });
+
+    const foundPlaylist = await playlists.findOne({
       title,
-      imageCover,
       userId: user._id,
     });
 
-    // Save the new playlist
+    if (foundPlaylist) {
+      return handleError(res, 406, "Duplicated Playlist Name");
+    }
+    const newPlaylist = new playlists({
+      title,
+      imageCover: "",
+      userId: user._id,
+    });
+
     const createdPlaylist = await newPlaylist.save();
 
     res.status(201).json({ playlist: createdPlaylist });
@@ -27,17 +36,29 @@ exports.editPlaylist = async function (req, res) {
     const { playlistId } = req.params;
     const { title, imageCover } = req.body;
 
-    // Check if the playlistId is valid
     const foundPlaylist = await playlists.findById(playlistId).exec();
     if (!foundPlaylist) {
       return handleError(res, 404, "Playlist not found");
     }
 
-    // Update playlist information
+    const user = await users.findOne({ email: req.user });
+    if (foundPlaylist.userId.toString() !== user._id.toString()) {
+      return handleError(res, 403, "Forbidden: You don't have permission to edit this playlist");
+    }
+
+    const existingPlaylist = await playlists.findOne({
+      title,
+      userId: user._id,
+      _id: { $ne: playlistId },
+    });
+
+    if (existingPlaylist) {
+      return handleError(res, 406, "Duplicated Playlist Name");
+    }
+
     foundPlaylist.title = title;
     foundPlaylist.imageCover = imageCover;
 
-    // Save the updated playlist
     const updatedPlaylist = await foundPlaylist.save();
 
     res.status(200).json({ playlist: updatedPlaylist });
@@ -50,14 +71,19 @@ exports.deletePlaylist = async function (req, res) {
   try {
     const { playlistId } = req.params;
 
-    // Check if the playlistId is valid
+    const user = await users.findOne({ email: req.user });
+    const loggedInUserId = user._id.toString()
+
     const foundPlaylist = await playlists.findById(playlistId).exec();
     if (!foundPlaylist) {
       return handleError(res, 404, "Playlist not found");
     }
 
-    // Delete the playlist
-    await foundPlaylist.remove();
+    if (foundPlaylist.userId.toString() !== loggedInUserId) {
+      return handleError(res, 403, "Forbidden: You can only delete your own playlists");
+    }
+
+    await playlists.findByIdAndDelete(loggedInUserId);
 
     res.status(204).end();
   } catch (error) {

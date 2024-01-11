@@ -62,7 +62,7 @@ exports.login = async function (req, res) {
           });
         });
       } else {
-        handleError(res, 401, "Not Authorized");
+        handleError(res, 401, "Unauthorized");
       }
     }
   } catch (error) {
@@ -94,7 +94,7 @@ exports.register = function (req, res) {
         .then((createdUser) => {
           const user_info = { email: createdUser.email };
           utilities.generateJSWToken(user_info, (token) => {
-            res.status(201).json({ accessToken: token, user: createdUser });
+            res.status(201).json({ token: token, user: createdUser });
           });
         })
         .catch((error) => {

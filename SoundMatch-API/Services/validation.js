@@ -24,10 +24,17 @@ exports.validateMusicId = [
   exports.validateFields, // Adding common validation
 ];
 
-// Validation middleware for creating or editing a playlist
-exports.validatePlaylist = [
+// Validation middleware for creating a playlist
+exports.validateCreatePlaylist = [
   body("title").notEmpty().isString().escape(),
-  body("imageCover").notEmpty().isURL().escape(),
+  body("imageCover").optional().notEmpty().isString().escape(),
+  exports.validateFields, // Adding common validation
+];
+
+// Validation middleware for editing a playlist
+exports.validateEditPlaylist = [
+  body("title").optional().notEmpty().isString().escape(),
+  body("imageCover").optional().notEmpty().isString().escape(),
   exports.validateFields, // Adding common validation
 ];
 
