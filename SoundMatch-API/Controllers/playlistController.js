@@ -2,6 +2,44 @@ const { handleError } = require("../Services/error");
 
 const playlists = require("../Models/playlist").playlists;
 const users = require("../Models/user").users;
+const musics = require("../Models/music").musics;
+
+exports.getPlaylistById = async function (req, res) {
+  try {
+    const { playlistId } = req.params;
+
+    const foundPlaylist = await playlists.findById(playlistId).exec();
+    if (!foundPlaylist) {
+      return handleError(res, 404, "Playlist not found");
+    }
+
+    const user = await users.findOne({ email: req.user });
+    if (foundPlaylist.userId.toString() !== user._id.toString()) {
+      return handleError(res, 403, "Forbidden: You can only view your own playlists");
+    }
+
+    res.status(200).json({ playlist: foundPlaylist });
+  } catch (error) {
+    handleError(res, 500, `Error getting playlist by ID: ${error}`);
+  }
+};
+
+exports.getAllPlaylists = async function (req, res) {
+  try {
+    const user = await users.findOne({ email: req.user });
+    const loggedInUserId = user._id.toString();
+
+    console.log(user)
+
+    const userPlaylists = await playlists
+      .find({ userId: loggedInUserId })
+      .exec();
+
+    res.status(200).json({ playlists: userPlaylists });
+  } catch (error) {
+    handleError(res, 500, `Error getting all playlists: ${error}`);
+  }
+};
 
 exports.createPlaylist = async function (req, res) {
   try {
@@ -43,7 +81,11 @@ exports.editPlaylist = async function (req, res) {
 
     const user = await users.findOne({ email: req.user });
     if (foundPlaylist.userId.toString() !== user._id.toString()) {
-      return handleError(res, 403, "Forbidden: You don't have permission to edit this playlist");
+      return handleError(
+        res,
+        403,
+        "Forbidden: You don't have permission to edit this playlist"
+      );
     }
 
     const existingPlaylist = await playlists.findOne({
@@ -72,7 +114,7 @@ exports.deletePlaylist = async function (req, res) {
     const { playlistId } = req.params;
 
     const user = await users.findOne({ email: req.user });
-    const loggedInUserId = user._id.toString()
+    const loggedInUserId = user._id.toString();
 
     const foundPlaylist = await playlists.findById(playlistId).exec();
     if (!foundPlaylist) {
@@ -80,7 +122,11 @@ exports.deletePlaylist = async function (req, res) {
     }
 
     if (foundPlaylist.userId.toString() !== loggedInUserId) {
-      return handleError(res, 403, "Forbidden: You can only delete your own playlists");
+      return handleError(
+        res,
+        403,
+        "Forbidden: You can only delete your own playlists"
+      );
     }
 
     await playlists.findByIdAndDelete(loggedInUserId);
@@ -88,5 +134,43 @@ exports.deletePlaylist = async function (req, res) {
     res.status(204).end();
   } catch (error) {
     handleError(res, 500, `Error deleting playlist: ${error}`);
+  }
+};
+
+exports.addRemoveMusicFromPlaylist = async function (req, res) {
+  try {
+    const { playlistId, musicId } = req.params;
+
+    const user = await users.findOne({ email: req.user });
+    const loggedInUserId = user._id.toString();
+
+    const foundPlaylist = await playlists.findById(playlistId).exec();
+    if (!foundPlaylist) {
+      return handleError(res, 404, "Playlist not found");
+    }
+
+    if (foundPlaylist.userId.toString() !== loggedInUserId) {
+      return handleError(res, 403, "Forbidden: You can only modify your own playlists");
+    }
+
+    //TODO Impement when music is implemented
+    // const foundMusic = await musics.findById(musicId).exec();
+    // if (!foundMusic) {
+    //   return handleError(res, 404, "Music not found");
+    // }
+
+    const musicIndex = foundPlaylist.music.indexOf(musicId);
+
+    if (musicIndex === -1) {
+      foundPlaylist.music.push(musicId);
+    } else {
+      foundPlaylist.music.splice(musicIndex, 1);
+    }
+
+    const updatedPlaylist = await foundPlaylist.save();
+
+    res.status(200).json({ playlist: updatedPlaylist });
+  } catch (error) {
+    handleError(res, 500, `Error adding/removing music from playlist: ${error}`);
   }
 };
