@@ -6,22 +6,27 @@ import {
   Button,
   Pressable,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import COLORS from '../constants/colors';
 import {Image, Linking} from 'react-native';
+
 
 const Login = ({navigation}, props) => {
   const [isPasswordShown, setPasswordShown] = useState(true);
   const handleGoogleSignIn = async () => {
     try {
       const response = await fetch('https://soundmatch-api.onrender.com/google');
-
+  
       if (response.ok) {
         const responseData = await response.json();
-        const {urlGoogle} = responseData;
+        const { urlGoogle } = responseData;
 
-        await Linking.openURL(urlGoogle)
+        // Initiate Google login with redirect_uri
+        await Linking.openURL(urlGoogle);
+
+        navigation.navigate('MainTabs');
+  
       } else {
         console.error('Failed to fetch sign-in link');
       }
@@ -29,6 +34,7 @@ const Login = ({navigation}, props) => {
       console.error('Error while fetching sign-in link:', error);
     }
   };
+  
   const handleLogin = () => {
     // Perform login authentication here
     // Example: For demonstration purposes, directly setting isLoggedIn to true

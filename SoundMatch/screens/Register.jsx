@@ -2,10 +2,30 @@ import {View, Text, TextInput, TouchableOpacity, Button, Pressable} from 'react-
 import React, {useState} from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import COLORS from '../constants/colors';
-import { Image } from 'react-native';
+import { Image, Linking } from 'react-native';
 
 const Register = ({navigation}, props) => {
     const [isPasswordShown, setPasswordShown] = useState(true);
+    const handleGoogleSignIn = async () => {
+        try {
+          const response = await fetch('https://soundmatch-api.onrender.com/google');
+      
+          if (response.ok) {
+            const responseData = await response.json();
+            const { urlGoogle } = responseData;
+    
+            // Initiate Google login with redirect_uri
+            await Linking.openURL(urlGoogle);
+
+            navigation.navigate('MainTabs');
+      
+          } else {
+            console.error('Failed to fetch sign-in link');
+          }
+        } catch (error) {
+          console.error('Error while fetching sign-in link:', error);
+        }
+      };
     return (
         <SafeAreaView style={{flex:1}}>
             <View style={{flex:0.8, marginHorizontal:22}}>
@@ -135,7 +155,7 @@ const Register = ({navigation}, props) => {
                     justifyContent: 'center'
                 }}>
                     <TouchableOpacity
-                    onPress={()=> console.log("Pressed")}
+                    onPress={handleGoogleSignIn}
                     style={{
                         flex:1,
                         alignItems: 'center',
