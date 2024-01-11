@@ -5,14 +5,25 @@ const playlistController = require("../Controllers/playlistController");
 const { isAuthenticated } = require("../Services/middleware");
 
 // Route to create a new playlist
-router.post(
-  "/create",
+// router.post(
+//   "/create",
+//   isAuthenticated,
+//   validation.validatePlaylist,
+//   (req, res) => {
+//     playlistController.createPlaylist(req, res);
+//   }
+// );
+
+router.get("/create", 
   isAuthenticated,
-  validation.validatePlaylist,
   (req, res) => {
-    playlistController.createPlaylist(req, res);
+    console.log("Post Create Playlist")
+    res.status(200).json({
+      user: req.user,
+      message: "Hello World"
+    })
   }
-);
+)
 
 // Route to edit a playlist
 router.put(

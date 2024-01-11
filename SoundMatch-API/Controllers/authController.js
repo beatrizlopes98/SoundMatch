@@ -24,8 +24,7 @@ exports.login = async function (req, res) {
                 } else {
                   utilities.generateJSWToken({ user: user_info.email }, (token) => {
                     res.status(200).json({
-                      token: token,
-                      email: user_info.email,
+                      token: token
                     });
                   });
                 }
@@ -59,8 +58,7 @@ exports.login = async function (req, res) {
       if (isPasswordValid) {
         utilities.generateJSWToken({ user: req.body.email }, (token) => {
           res.status(200).json({
-            token: token,
-            email: foundUser.email,
+            token: token
           });
         });
       } else {

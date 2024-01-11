@@ -5,9 +5,9 @@ const { handleError } = require("./error");
 const secret = process.env.SECRET;
 
 const googleConfig = {
-  clientId:
-    "313000397225-o06na9kdk28vnl7u019p163lpcsdqf50.apps.googleusercontent.com",
+  clientId:"313000397225-o06na9kdk28vnl7u019p163lpcsdqf50.apps.googleusercontent.com",
   clientSecret: "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",
+  //redirect: "http://localhost:3000/login"
   redirect: "https://soundmatch-api.onrender.com/login",
 };
 
@@ -37,6 +37,7 @@ exports.validateJSWToken = (token) => {
       if (error) {
         reject(error);
       } else {
+        console.log(decoded)
         resolve(decoded);
       }
     });
@@ -60,7 +61,6 @@ const getConnectionUrl = (auth) =>
 const urlGoogle = () => {
   const auth = createConnection();
   const url = getConnectionUrl(auth);
-  //console.log(url)
   return url;
 };
 
@@ -68,12 +68,10 @@ const getTokens = (code, req, res, callback) => {
   const auth = createConnection();
   auth.getToken(code, (error, tokens) => {
     if (error) {
-      //return callback(true, error);
       return handleError(res, 500, `Error getting tokens: ${error.message}`);
     }
 
     if (!tokens) {
-      //return callback(true, error);
       return handleError(res, 500, "Error getting tokens: No tokens found");
     }
     return callback(false, tokens);

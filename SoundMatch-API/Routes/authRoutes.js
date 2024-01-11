@@ -9,7 +9,10 @@ const authValidation = require("../Services/validation");
 router.post(
   "/register",
   authValidation.validateRegistration,
-  authController.register
+  (req, res) => {
+    console.log("Post Register")
+    authController.register(req, res)
+  }
 );
 
 router.post("/login", (req, res) => {
