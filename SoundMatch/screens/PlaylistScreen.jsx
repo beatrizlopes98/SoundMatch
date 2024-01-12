@@ -1,3 +1,4 @@
+// PlaylistScreen.js
 import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Image } from 'react-native';
 import COLORS from '../constants/colors';
@@ -16,7 +17,7 @@ const PlaylistScreen = ({ route, navigation }) => {
 
   const renderMusicItem = ({ item }) => (
     <View style={styles.musicItem}>
-      <Text style={{color:'#333'}}>{item.title}</Text>
+      <Text style={{ color: '#333' }}>{item.title}</Text>
     </View>
   );
 
@@ -29,8 +30,8 @@ const PlaylistScreen = ({ route, navigation }) => {
       >
         <Image source={require('../assets/backward.png')} style={styles.backArrowImage} />
       </TouchableOpacity>
-      <Image source={playlistData.imageUrl} style={styles.playlistImage} />
-      <Text style={styles.playlistTitle}>{playlistData.title}</Text>
+      <Image source={playlistData.image} style={styles.playlistImage} />
+      <Text style={styles.playlistTitle}>{playlistData.name}</Text>
 
       {/* Music List */}
       <FlatList
@@ -96,7 +97,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    color:'#333'
+    color: '#333',
   },
   shareButton: {
     position: 'absolute',
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22,
-    backgroundColor:'#333',
+    backgroundColor: '#333',
   },
 });
 

@@ -1,7 +1,9 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
-const Discover = ({ navigation }) => {
+const Discover = ({ navigation,route }) => {
+    const { params } = route;
+  const updatedProfileImage = params?.updatedProfileImage;
   // Sample playlist data (replace with your actual data)
   const playlistData = [
     { id: '1', title: 'Playlist 1', imageUrl: require('../assets/BarMediterraneo.jpg') },
@@ -13,26 +15,28 @@ const Discover = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity onPress={()=>navigation.navigate('Profile')}>
         <View style={styles.profile}>
           {/* Replace the source prop with the path to the user's profile image */}
-          <Image source={require('../assets/sound.png')} style={styles.profileImage} />
+          <Image source={updatedProfileImage || require('../assets/sound.png')} style={styles.profileImage} />
         </View>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.mainContent}>
         {/* Recommended Playlist Squares */}
         {playlistData.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            style={styles.playlistSquare}
-            onPress={() => navigation.navigate("PlaylistScreen", { playlistData: item })}
-          >
-            <Image source={item.imageUrl} style={styles.playlistImage} />
-            <View style={styles.playlistTitleContainer}>
-              <Text style={styles.playlistTitle}>{item.title}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
+  <TouchableOpacity
+    key={item.id}
+    style={styles.playlistSquare}
+    onPress={() => navigation.navigate("PlaylistScreen", { playlistData: { id: item.id, title: item.title, image: item.imageUrl } })}
+  >
+    <Image source={item.imageUrl} style={styles.playlistImage} />
+    <View style={styles.playlistTitleContainer}>
+      <Text style={styles.playlistTitle}>{item.title}</Text>
+    </View>
+  </TouchableOpacity>
+))}
       </View>
     </View>
   );

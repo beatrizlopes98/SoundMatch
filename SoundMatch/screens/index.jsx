@@ -6,6 +6,7 @@ import Discover from "./Discover";
 import Playlists from "./Playlists";
 import GenderSelect from "./GenderSelect";
 import PlaylistScreen from "./PlaylistScreen";
+import Profile from "./Profile";
 
 export{
     Login,
@@ -15,5 +16,6 @@ export{
     Discover,
     Playlists,
     GenderSelect,
-    PlaylistScreen
+    PlaylistScreen,
+    Profile
 }
