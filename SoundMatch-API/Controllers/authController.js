@@ -24,8 +24,7 @@ exports.login = async function (req, res) {
                 } else {
                   utilities.generateJSWToken({ user: user_info.email }, (token) => {
                     res.status(200).json({
-                      token: token,
-                      email: user_info.email,
+                      token: token
                     });
                   });
                 }
@@ -59,12 +58,11 @@ exports.login = async function (req, res) {
       if (isPasswordValid) {
         utilities.generateJSWToken({ user: req.body.email }, (token) => {
           res.status(200).json({
-            token: token,
-            email: foundUser.email,
+            token: token
           });
         });
       } else {
-        handleError(res, 401, "Not Authorized");
+        handleError(res, 401, "Unauthorized");
       }
     }
   } catch (error) {
@@ -96,7 +94,7 @@ exports.register = function (req, res) {
         .then((createdUser) => {
           const user_info = { email: createdUser.email };
           utilities.generateJSWToken(user_info, (token) => {
-            res.status(201).json({ accessToken: token, user: createdUser });
+            res.status(201).json({ token: token, user: createdUser });
           });
         })
         .catch((error) => {

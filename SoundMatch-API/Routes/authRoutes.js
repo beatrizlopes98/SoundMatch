@@ -5,13 +5,17 @@ const utilities = require("../Services/utilities");
 const authController = require("../Controllers/authController");
 const authValidation = require("../Services/validation");
 
-// Normal registration and login routes
+// Request Body register route
 router.post(
   "/register",
   authValidation.validateRegistration,
-  authController.register
+  (req, res) => {
+    console.log("Post Register")
+    authController.register(req, res)
+  }
 );
 
+// Request Body login route
 router.post("/login", (req, res) => {
   console.log("Post Login");
   authController.login(req, res);
