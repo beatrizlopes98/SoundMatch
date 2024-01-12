@@ -15,7 +15,11 @@ exports.getPlaylistById = async function (req, res) {
 
     const user = await users.findOne({ email: req.user });
     if (foundPlaylist.userId.toString() !== user._id.toString()) {
-      return handleError(res, 403, "Forbidden: You can only view your own playlists");
+      return handleError(
+        res,
+        403,
+        "Forbidden: You can only view your own playlists"
+      );
     }
 
     res.status(200).json({ playlist: foundPlaylist });
@@ -28,8 +32,6 @@ exports.getAllPlaylists = async function (req, res) {
   try {
     const user = await users.findOne({ email: req.user });
     const loggedInUserId = user._id.toString();
-
-    console.log(user)
 
     const userPlaylists = await playlists
       .find({ userId: loggedInUserId })
@@ -62,6 +64,9 @@ exports.createPlaylist = async function (req, res) {
     });
 
     const createdPlaylist = await newPlaylist.save();
+
+    user.playlistId.push(createdPlaylist._id);
+    await user.save();
 
     res.status(201).json({ playlist: createdPlaylist });
   } catch (error) {
@@ -129,6 +134,12 @@ exports.deletePlaylist = async function (req, res) {
       );
     }
 
+    const index = user.playlistId.indexOf(playlistId);
+    if (index !== -1) {
+      user.playlistId.splice(index, 1);
+    }
+
+    await user.save();
     await playlists.findByIdAndDelete(loggedInUserId);
 
     res.status(204).end();
@@ -150,7 +161,11 @@ exports.addRemoveMusicFromPlaylist = async function (req, res) {
     }
 
     if (foundPlaylist.userId.toString() !== loggedInUserId) {
-      return handleError(res, 403, "Forbidden: You can only modify your own playlists");
+      return handleError(
+        res,
+        403,
+        "Forbidden: You can only modify your own playlists"
+      );
     }
 
     //TODO Impement when music is implemented
@@ -171,6 +186,10 @@ exports.addRemoveMusicFromPlaylist = async function (req, res) {
 
     res.status(200).json({ playlist: updatedPlaylist });
   } catch (error) {
-    handleError(res, 500, `Error adding/removing music from playlist: ${error}`);
+    handleError(
+      res,
+      500,
+      `Error adding/removing music from playlist: ${error}`
+    );
   }
 };
