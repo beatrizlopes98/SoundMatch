@@ -4,6 +4,7 @@ import Register from "./Register";
 import Match from "./Match";
 import Discover from "./Discover";
 import Playlists from "./Playlists";
+import GenderSelect from "./GenderSelect";
 
 export{
     Login,
@@ -11,5 +12,6 @@ export{
     LoadingPage,
     Match,
     Discover,
-    Playlists
+    Playlists,
+    GenderSelect
 }

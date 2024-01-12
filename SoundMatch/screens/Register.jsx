@@ -131,7 +131,7 @@ const Register = ({navigation}, props) => {
                     </View>
                 </View>
                 <Button
-                title='Sign Up' color={COLORS.purple} onPress={()=> { navigation.navigate("Match")}}/>
+                title='Sign Up' color={COLORS.purple} onPress={()=> { navigation.navigate("GenderSelect")}}/>
 
                 <View style={{ flexDirection: 'row', alignItems:'center', marginVertical:20}}>
                     <View style={{

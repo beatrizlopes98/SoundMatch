@@ -5,6 +5,7 @@ import Slider from '@react-native-community/slider';
 
 const {width, height} = Dimensions.get('window');
 const Match = () => {
+  
     return(
         <SafeAreaView style={{flex:1, backgroundColor: COLORS.lavanda}}>
         <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
