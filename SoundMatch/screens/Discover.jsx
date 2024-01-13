@@ -95,6 +95,7 @@ const Discover = ({ navigation,route }) => {
         position: 'absolute',
         bottom: 10,
         left: 10,
+        backgroundColor: '#333'
       },
       playlistTitle: {
         color: '#fff',

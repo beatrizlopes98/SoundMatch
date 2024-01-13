@@ -10,9 +10,9 @@ const Playlists = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [playlists, setPlaylists] = useState([]);
 
-  const handleAddPlaylist = (playlistName, playlistImage) => {
+  const handleAddPlaylist = (playlistTitle, playlistImage) => {
     // Add the new playlist to the state with a default image if not specified
-    setPlaylists([...playlists, { name: playlistName, songs: [], image: playlistImage || defaultPlaylistImage }]);
+    setPlaylists([...playlists, { title: playlistTitle, songs: [], image: playlistImage || defaultPlaylistImage }]);
   };
 
   const handleDeletePlaylist = (index) => {
@@ -21,6 +21,7 @@ const Playlists = ({ navigation }) => {
     updatedPlaylists.splice(index, 1);
     setPlaylists(updatedPlaylists);
   };
+  
 
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}>
@@ -31,15 +32,18 @@ const Playlists = ({ navigation }) => {
           style={{ padding: 5, backgroundColor: COLORS.purple, borderRadius: 5 }}
         >
           <Image source={playlist.image} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
-          <Text>{playlist.name}</Text>
+          <Text>{playlist.title}</Text>
           <Text style={{ marginTop: 3, opacity: 0.3, fontSize: 14 }}>{playlist.songs.length} songs</Text>
           {/* Add buttons for playlist options */}
           <View style={{ flexDirection: 'row', marginTop: 5 }}>
             <TouchableOpacity onPress={() => handleDeletePlaylist(index)} style={{ marginRight: 10 }}>
               <Text style={{ color: COLORS.red }}>Delete</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => console.log('Share')}>
+            <TouchableOpacity onPress={() => console.log('Share')} style={{ marginRight: 10 }}>
               <Text style={{ color: COLORS.blue }}>Share</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => console.log('Edit')}>
+              <Text style={{ color: COLORS.blue }}>Edit</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>

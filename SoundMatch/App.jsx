@@ -10,6 +10,7 @@ const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
+  const [playlists, setPlaylists] = useState([]);
   return (
     <Tab.Navigator screenOptions={{
       headerShown: false,
@@ -27,9 +28,11 @@ const TabNavigator = () => {
       )}} />
         <Tab.Screen  name="Match" component={Match} options={{headerShown:false, tabBarIcon:({focused})=>(
           <Image source={require('./assets/plus.png')} style={{width:32, height:32, tintColor: COLORS.lavanda}}></Image>
+          
         )}} />
-        <Tab.Screen name="Playlists" component={Playlists} options={{headerShown:false,tabBarIcon:({focused})=>(
+        <Tab.Screen name="Playlists" component={Playlists}  options={{headerShown:false,tabBarIcon:({focused})=>(
         <Image source={require('./assets/playlist.png')} style={{width:32, height:32, tintColor: COLORS.lavanda}}></Image>
+        
         )}} />
     </Tab.Navigator>
   );

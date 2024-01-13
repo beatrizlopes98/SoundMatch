@@ -107,7 +107,7 @@ const Register = ({navigation}, props) => {
                     }}>
                         <TextInput 
                         secureTextEntry={isPasswordShown}
-                        placeholder='Enter your name'
+                        placeholder='Enter your password'
                         placeholderTextColor={COLORS.black}
                         style={{
                             width: "100%"

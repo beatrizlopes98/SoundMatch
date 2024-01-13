@@ -7,6 +7,7 @@ import COLORS from '../constants/colors';
 
 const Profile = ({ navigation }) => {
     const [profileImage, setProfileImage] = useState(null);
+    const [isPasswordShown, setPasswordShown] = useState(true);
   
     const handleImageUpload = () => {
       // Implement image upload functionality here
@@ -57,28 +58,51 @@ const Profile = ({ navigation }) => {
                             width: "100%"
                         }}/>
                     </View>
-                    <Text style={{
-                        fontSize: 16,
-                        fontWeight: 400,
-                        marginVertical: 8
-                    }}>Email</Text>
-                    <View style={{
-                        width:"100%",
-                        height: 48,
-                        borderColor: COLORS.black,
-                        borderWidth:1,
-                        borderRadius:8,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        paddingLeft:22
-                    }}>
-                        <TextInput 
-                        placeholder='Enter your name'
-                        placeholderTextColor={COLORS.black}
-                        style={{
-                            width: "100%"
-                        }}/>
-                    </View>
+                    <Text
+            style={{
+              fontSize: 16,
+              fontWeight: 400,
+              marginVertical: 8,
+            }}>
+            Password
+          </Text>
+          <View
+            style={{
+              width: '100%',
+              height: 48,
+              borderColor: COLORS.black,
+              borderWidth: 1,
+              borderRadius: 8,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingLeft: 22,
+            }}>
+            <TextInput
+              secureTextEntry={isPasswordShown}
+              placeholder="Enter your passsword"
+              placeholderTextColor={COLORS.black}
+              style={{
+                width: '100%',
+              }}
+            />
+
+            <TouchableOpacity
+              onPress={() => setPasswordShown(!isPasswordShown)}
+              style={{
+                position: 'absolute',
+                right: 12,
+              }}>
+              {isPasswordShown == false ? (
+                <Image
+                  source={require('../assets/view.png')}
+                  style={{height: 24, width: 24}}></Image>
+              ) : (
+                <Image
+                  source={require('../assets/hide.png')}
+                  style={{height: 24, width: 24}}></Image>
+              )}
+            </TouchableOpacity>
+          </View>
                     </View>
         {/* Save Button */}
         <TouchableOpacity style={styles.saveButton} onPress={() => console.log('Save button pressed')}>

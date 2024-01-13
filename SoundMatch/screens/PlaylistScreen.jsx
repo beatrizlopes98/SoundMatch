@@ -5,6 +5,7 @@ import COLORS from '../constants/colors';
 
 const PlaylistScreen = ({ route, navigation }) => {
   const { playlistData } = route.params;
+  const { title, image } = playlistData;
   const [isModalVisible, setModalVisible] = useState(false);
 
   // Sample music data (replace with your actual data)
@@ -31,7 +32,7 @@ const PlaylistScreen = ({ route, navigation }) => {
         <Image source={require('../assets/backward.png')} style={styles.backArrowImage} />
       </TouchableOpacity>
       <Image source={playlistData.image} style={styles.playlistImage} />
-      <Text style={styles.playlistTitle}>{playlistData.name}</Text>
+      <Text style={styles.playlistTitle}>{playlistData.title}</Text>
 
       {/* Music List */}
       <FlatList
@@ -44,7 +45,7 @@ const PlaylistScreen = ({ route, navigation }) => {
         style={styles.shareButton}
         onPress={() => setModalVisible(true)}
       >
-        <Text style={styles.shareButtonText}>Share</Text>
+        <Image source={require('../assets/more.png')} style={{width:40, height:40}}></Image>
       </TouchableOpacity>
 
       {/* Share Modal */}
@@ -58,6 +59,8 @@ const PlaylistScreen = ({ route, navigation }) => {
       >
         <View style={styles.modalContent}>
           <Text>Share your playlist</Text>
+          <Text>Edit</Text>
+          <Text>Delete</Text>
           {/* Add share functionality here */}
           <TouchableOpacity onPress={() => setModalVisible(false)}>
             <Text>Close</Text>
@@ -87,6 +90,7 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     resizeMode: 'cover',
+    marginTop: 50,
   },
   playlistTitle: {
     color: '#333',
@@ -103,9 +107,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 20,
     right: 20,
-    backgroundColor: '#333',
-    padding: 10,
-    borderRadius: 5,
+    zIndex: 1,
   },
   shareButtonText: {
     color: '#fff',
