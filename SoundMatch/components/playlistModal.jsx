@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, AsyncStorage } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Modal, View, Text, TextInput, TouchableOpacity } from 'react-native';
 import COLORS from '../constants/colors';
 
-const PlaylistModal = ({ visible, onClose, onAddPlaylist }) => {
+const PlaylistModal = ({ visible, onClose, onSaveChanges, editIndex, playlists }) => {
   const [playlistName, setPlaylistName] = useState('');
 
-  const handleAddPlaylist = () => {
-    // Add the new playlist and close the modal
-    onAddPlaylist(playlistName);
-    setPlaylistName('');
-    onClose();
+  useEffect(() => {
+    if (editIndex !== null) {
+      setPlaylistName(playlists[editIndex].title);
+    } else {
+      setPlaylistName('');
+    }
+  }, [editIndex, playlists]);
+
+  const handleSaveChanges = () => {
+    onSaveChanges(playlistName);
   };
 
   return (
@@ -21,7 +26,7 @@ const PlaylistModal = ({ visible, onClose, onAddPlaylist }) => {
     >
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <View style={{ backgroundColor: COLORS.white, padding: 20, borderRadius: 10, width: 300 }}>
-          <Text style={{ fontSize: 16, marginBottom: 10 }}>Enter Playlist Name:</Text>
+          <Text style={{ fontSize: 16, marginBottom: 10 }}>{editIndex !== null ? 'Edit' : 'Enter'} Playlist Name:</Text>
           <TextInput
             style={{ borderWidth: 1, borderColor: COLORS.gray, borderRadius: 5, padding: 8, marginBottom: 10 }}
             value={playlistName}
@@ -29,9 +34,11 @@ const PlaylistModal = ({ visible, onClose, onAddPlaylist }) => {
           />
           <TouchableOpacity
             style={{ backgroundColor: COLORS.purple, padding: 10, borderRadius: 5 }}
-            onPress={handleAddPlaylist}
+            onPress={handleSaveChanges}
           >
-            <Text style={{ color: COLORS.white, textAlign: 'center' }}>Add Playlist</Text>
+            <Text style={{ color: COLORS.white, textAlign: 'center' }}>
+              {editIndex !== null ? 'Save Changes' : 'Add Playlist'}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -40,3 +47,5 @@ const PlaylistModal = ({ visible, onClose, onAddPlaylist }) => {
 };
 
 export default PlaylistModal;
+
+
