@@ -1,12 +1,14 @@
 
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import COLORS from '../constants/colors';
 
 
 const Profile = ({ navigation }) => {
     const [profileImage, setProfileImage] = useState(null);
+    const [name, setName] = useState('');
+    const [password, setPassword] = useState('');
     const [isPasswordShown, setPasswordShown] = useState(true);
   
     const handleImageUpload = () => {
@@ -17,6 +19,33 @@ const Profile = ({ navigation }) => {
   
       // Navigate back to the Discover page and pass the updated image URL
       navigation.navigate('Discover', { updatedProfileImage: profileImage });
+    };
+    const handleSaveProfile = async () => {
+      try {
+        // Assuming your API endpoint for updating the profile is "/edit"
+        const response = await fetch('https://soundmatch-api.onrender.com/edit', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name,
+            password,
+            // Add other fields you want to update in the API request
+          }),
+        });
+  
+        if (response.ok) {
+          // Profile updated successfully
+          Alert.alert('Success', 'Profile updated successfully');
+        } else {
+          // Handle failed profile update or show error message
+          Alert.alert('Error', 'Failed to update profile. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error during profile update:', error);
+        Alert.alert('Error', 'An unexpected error occurred. Please try again later.');
+      }
     };
 
   return (
@@ -56,7 +85,9 @@ const Profile = ({ navigation }) => {
                         placeholderTextColor={COLORS.black}
                         style={{
                             width: "100%"
-                        }}/>
+                        }}
+                        value={name}
+                        onChangeText={(text) => setName(text)}/>
                     </View>
                     <Text
             style={{
@@ -84,6 +115,8 @@ const Profile = ({ navigation }) => {
               style={{
                 width: '100%',
               }}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
             />
 
             <TouchableOpacity
@@ -105,7 +138,7 @@ const Profile = ({ navigation }) => {
           </View>
                     </View>
         {/* Save Button */}
-        <TouchableOpacity style={styles.saveButton} onPress={() => console.log('Save button pressed')}>
+        <TouchableOpacity style={styles.saveButton} onPress={handleSaveProfile}>
           <Text style={styles.saveButtonText}>Save and Update</Text>
         </TouchableOpacity>
       </View>

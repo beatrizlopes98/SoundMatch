@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Button,
   Pressable,
+  Alert
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -14,6 +15,8 @@ import {Image, Linking} from 'react-native';
 
 const Login = ({navigation}, props) => {
   const [isPasswordShown, setPasswordShown] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const handleGoogleSignIn = async () => {
     try {
       const response = await fetch('https://soundmatch-api.onrender.com/google');
@@ -35,19 +38,28 @@ const Login = ({navigation}, props) => {
     }
   };
   
-  const handleLogin = () => {
-    // Perform login authentication here
-    // Example: For demonstration purposes, directly setting isLoggedIn to true
-    // Replace this with your actual authentication logic
-    const isLoggedIn = true; // Assuming login is successful
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('https://soundmatch-api.onrender.com/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (isLoggedIn) {
-      // Navigate to the bottom tab navigator
-      navigation.navigate('MainTabs');
-    } else {
-      // Handle failed login or show error message
+      if (response.ok) {
+        // Navigate to the main tabs screen on successful login
+        navigation.navigate('MainTabs');
+      } else {
+        // Handle failed login or show error message
+        Alert.alert('Login Failed', 'Invalid email or password');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
     }
   };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={{flex: 0.7, marginHorizontal: 22}}>
@@ -96,6 +108,8 @@ const Login = ({navigation}, props) => {
               style={{
                 width: '100%',
               }}
+              value={email}
+              onChangeText={(text) => setEmail(text)}
             />
           </View>
           <Text
@@ -124,6 +138,8 @@ const Login = ({navigation}, props) => {
               style={{
                 width: '100%',
               }}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
             />
 
             <TouchableOpacity
