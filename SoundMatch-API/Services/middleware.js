@@ -13,9 +13,7 @@ const isAuthenticated = async (req, res, next) => {
         return handleError(res, 401, "Unauthorized: Invalid JWT token");
       }
       console.log("Authenticated via JWT token");
-      console.log(payload.data.user)
       req.user = payload.data.user;
-      console.log(req.user)
       next();
     }
   } catch (error) {
