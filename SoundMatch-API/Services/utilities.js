@@ -61,6 +61,9 @@ exports.validateJSWToken = (token) => {
       if (error) {
         reject(error);
       } else {
+        console.log("--------------------------------")
+        console.log(decoded)
+        console.log("--------------------------------")
         resolve(decoded);
       }
     });
