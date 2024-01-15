@@ -1,11 +1,55 @@
-import {View, Text, TextInput, TouchableOpacity, Button, Pressable} from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, Button, Pressable, Alert} from 'react-native';
 import React, {useState} from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import COLORS from '../constants/colors';
-import { Image } from 'react-native';
+import { Image, Linking } from 'react-native';
 
 const Register = ({navigation}, props) => {
     const [isPasswordShown, setPasswordShown] = useState(true);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const handleGoogleSignIn = async () => {
+        try {
+          const response = await fetch('https://soundmatch-api.onrender.com/google');
+      
+          if (response.ok) {
+            const responseData = await response.json();
+            const { urlGoogle } = responseData;
+    
+            // Initiate Google login with redirect_uri
+            await Linking.openURL(urlGoogle);
+
+            navigation.navigate('MainTabs');
+      
+          } else {
+            console.error('Failed to fetch sign-in link');
+          }
+        } catch (error) {
+          console.error('Error while fetching sign-in link:', error);
+        }
+      };
+      const handleRegister = async () => {
+        try {
+          const response = await fetch('https://soundmatch-api.onrender.com/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, email, password }),
+          });
+    
+          if (response.ok) {
+            // Navigate to the gender select screen on successful registration
+            navigation.navigate('GenderSelect');
+          } else {
+            // Handle failed registration or show error message
+            Alert.alert('Registration Failed', 'Email might be already in use or invalid');
+          }
+        } catch (error) {
+          console.error('Error during registration:', error);
+        }
+      };
     return (
         <SafeAreaView style={{flex:1}}>
             <View style={{flex:0.8, marginHorizontal:22}}>
@@ -46,7 +90,9 @@ const Register = ({navigation}, props) => {
                         placeholderTextColor={COLORS.black}
                         style={{
                             width: "100%"
-                        }}/>
+                        }}
+                        value={name}
+                        onChangeText={(text) => setName(text)}/>
                     </View>
                     <Text style={{
                         fontSize: 16,
@@ -64,11 +110,13 @@ const Register = ({navigation}, props) => {
                         paddingLeft:22
                     }}>
                         <TextInput 
-                        placeholder='Enter your name'
+                        placeholder='Enter your email'
                         placeholderTextColor={COLORS.black}
                         style={{
                             width: "100%"
-                        }}/>
+                        }}
+                        value={email}
+                        onChangeText={(text) => setEmail(text)}/>
                     </View>
                     <Text style={{
                         fontSize: 16,
@@ -87,11 +135,13 @@ const Register = ({navigation}, props) => {
                     }}>
                         <TextInput 
                         secureTextEntry={isPasswordShown}
-                        placeholder='Enter your name'
+                        placeholder='Enter your password'
                         placeholderTextColor={COLORS.black}
                         style={{
                             width: "100%"
-                        }}/>
+                        }}
+                        value={password}
+                        onChangeText={(text) => setPassword(text)}/>
 
                         <TouchableOpacity
                         onPress={() => setPasswordShown(!isPasswordShown)}
@@ -111,7 +161,7 @@ const Register = ({navigation}, props) => {
                     </View>
                 </View>
                 <Button
-                title='Sign Up' color={COLORS.purple} onPress={()=> { navigation.navigate("Match")}}/>
+                title='Sign Up' color={COLORS.purple} onPress={handleRegister}/>
 
                 <View style={{ flexDirection: 'row', alignItems:'center', marginVertical:20}}>
                     <View style={{
@@ -135,7 +185,7 @@ const Register = ({navigation}, props) => {
                     justifyContent: 'center'
                 }}>
                     <TouchableOpacity
-                    onPress={()=> console.log("Pressed")}
+                    onPress={handleGoogleSignIn}
                     style={{
                         flex:1,
                         alignItems: 'center',

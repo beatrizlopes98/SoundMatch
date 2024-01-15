@@ -4,12 +4,13 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import COLORS from './constants/colors'
-import {Login, Register, LoadingPage, Match, Playlists, Discover} from './screens';
+import {Login, Register, LoadingPage, Match, Playlists, Discover, GenderSelect, PlaylistScreen, Profile} from './screens';
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
+  const [playlists, setPlaylists] = useState([]);
   return (
     <Tab.Navigator screenOptions={{
       headerShown: false,
@@ -27,9 +28,11 @@ const TabNavigator = () => {
       )}} />
         <Tab.Screen  name="Match" component={Match} options={{headerShown:false, tabBarIcon:({focused})=>(
           <Image source={require('./assets/plus.png')} style={{width:32, height:32, tintColor: COLORS.lavanda}}></Image>
+          
         )}} />
-        <Tab.Screen name="Playlists" component={Playlists} options={{headerShown:false,tabBarIcon:({focused})=>(
+        <Tab.Screen name="Playlists" component={Playlists}  options={{headerShown:false,tabBarIcon:({focused})=>(
         <Image source={require('./assets/playlist.png')} style={{width:32, height:32, tintColor: COLORS.lavanda}}></Image>
+        
         )}} />
     </Tab.Navigator>
   );
@@ -68,8 +71,29 @@ function App() {
         }}
         />
         <Stack.Screen
+          name='GenderSelect'
+          component={GenderSelect}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
           name='MainTabs'
           component={TabNavigator}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name='PlaylistScreen'
+          component={PlaylistScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name='Profile'
+          component={Profile}
           options={{
             headerShown: false,
           }}
