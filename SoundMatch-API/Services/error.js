@@ -4,5 +4,5 @@ exports.handleError = function (res, statusCode, message) {
     return;
   }
 
-  return res.status(statusCode).send({ code: statusCode, message: message });
+  return res.status(statusCode).json({ code: statusCode, message: message });
 };
