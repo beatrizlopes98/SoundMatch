@@ -18,6 +18,13 @@ exports.validateRegistration = [
   exports.validateFields, // Adding common validation
 ];
 
+// Validation middleware for user login
+exports.validateLogin = [
+  body("email").isEmail().notEmpty().escape(),
+  body("password").isLength({ min: 5, max: 15 }).notEmpty().escape(),
+  exports.validateFields, // Adding common validation
+];
+
 // Validation middleware for creating a playlist
 exports.validateCreatePlaylist = [
   body("title").notEmpty().isString().escape(),

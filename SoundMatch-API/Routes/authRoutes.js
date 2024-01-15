@@ -16,10 +16,12 @@ router.post(
 );
 
 // Request Body login route
-router.post("/login", (req, res) => {
-  console.log("Post Login");
-  authController.login(req, res);
-});
+router.post("/login", 
+  authValidation.validateLogin,  
+  (req, res) => {
+    console.log("Post Login");
+    authController.login(req, res);
+  });
 
 // Google login route
 router.get("/google", (req, res) => {

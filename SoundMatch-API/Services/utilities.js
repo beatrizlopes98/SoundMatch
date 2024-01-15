@@ -7,8 +7,8 @@ const secret = process.env.SECRET;
 const googleConfig = {
   clientId:"313000397225-o06na9kdk28vnl7u019p163lpcsdqf50.apps.googleusercontent.com",
   clientSecret: "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",
-  redirect: "http://localhost:3000/login"
-  //redirect: "https://soundmatch-api.onrender.com/login",
+  //redirect: "http://localhost:3000/login"
+  redirect: "https://soundmatch-api.onrender.com/login",
 };
 
 const defaultScope = [
