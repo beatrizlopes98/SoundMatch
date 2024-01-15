@@ -48,6 +48,12 @@ exports.validateEditUser = [
   exports.validateFields, // Adding common validation
 ];
 
+// Validation middleware for editing user profile
+exports.validateEditGenres = [
+  body("genres").isArray().escape(),
+  exports.validateFields, // Adding common validation
+];
+
 // Validation middleware for adding or removing music from a playlist
 exports.validateMusicId = [
   param("musicId").isMongoId().notEmpty().escape(),

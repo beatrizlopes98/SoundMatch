@@ -136,3 +136,31 @@ exports.addMusicToLikes = async function (req, res) {
     );
   }
 };
+
+exports.editGenresToUser = async function (req, res) {
+  try {
+    const { genres } = req.body;
+
+    const user = await users.findOne({ email: req.user });
+
+    if (!user) {
+      return handleError(res, 404, "User not found");
+    }
+
+    if (user.email !== req.user) {
+      return handleError(
+        res,
+        403,
+        "Forbidden: You don't have permission to edit this profile"
+      );
+    }
+
+    user.genres = genres;
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({ user: updatedUser });
+  } catch (error) {
+    handleError(res, 500, `Error editing user profile: ${error}`);
+  }
+};

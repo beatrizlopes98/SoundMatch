@@ -84,6 +84,7 @@ exports.register = function (req, res) {
         name: req.body.name,
         email: req.body.email,
         password: hashedPassword,
+        genres: [],
         seens: [],
         likes: [],
         playlistId: [],

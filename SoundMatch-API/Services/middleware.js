@@ -4,11 +4,10 @@ const { validateJSWToken } = require("../Services/utilities");
 const isAuthenticated = async (req, res, next) => {
   const token = req.headers.authorization;
 
-  if (!token) {
-    return handleError(res, 401, "Unauthorized: Token is missing");
-  } else {
-    // Validate the JWT token
-    try {
+  try {
+    if (!token) {
+      return handleError(res, 401, "Unauthorized: Token is missing");
+    } else {
       const payload = await validateJSWToken(token);
       if (!payload) {
         return handleError(res, 401, "Unauthorized: Invalid JWT token");
@@ -16,12 +15,22 @@ const isAuthenticated = async (req, res, next) => {
       console.log("Authenticated via JWT token");
       req.user = payload.data.user;
       next();
-    } catch (error) {
-      return handleError(res, 401, `Unauthorized: ${error.message}`);
     }
+  } catch (error) {
+    return handleError(res, 401, `Unauthorized: ${error.message}`);
+  }
+};
+
+const isAdmin = (req, res, next) => {
+  if (req.user && req.user.email === "admin@mail.com") {
+    console.log("User is an admin");
+    next();
+  } else {
+    return handleError(res, 403, "Forbidden: Admin access required");
   }
 };
 
 module.exports = {
   isAuthenticated,
+  isAdmin,
 };
