@@ -27,8 +27,8 @@ router.get("/google", (req, res) => {
 });
 
 // Route to handle Google OAuth2.0 callback
-router.get("/login", (req, res) => {
-  console.log("Get Login");
+router.get("/callbackGoogle", (req, res) => {
+  console.log("Callback Google");
   authController.login(req, res);
 });
 
@@ -42,8 +42,9 @@ router.get("/spotify", (req, res) => {
 });
 
 // Route to handle Spotify OAuth2.0 callback
-router.get("/handleSpotify", async (req, res) => {
+router.get("/callbackSpotify", async (req, res) => {
   try {
+    console.log("Callback Spotify");
     const { code } = req.query;
 
     if (!code) {

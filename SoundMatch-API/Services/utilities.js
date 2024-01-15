@@ -8,15 +8,15 @@ const secret = process.env.SECRET;
 const googleConfig = {
   clientId:"313000397225-o06na9kdk28vnl7u019p163lpcsdqf50.apps.googleusercontent.com",
   clientSecret: "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",
-  redirect: "https://soundmatch-api.onrender.com/login",
-  //redirect: "http://localhost:3000/login"
+  redirect: "https://soundmatch-api.onrender.com/callbackGoogle",
+  //redirect: "http://localhost:3000/callbackGoogle"
 };
 
 const spotifyConfig = {
   client_id: "32bbc37fbca044c39ce1a7a22b2d8658",
   client_secret: "bb679316c1f44cbe95c73491810a8e72",
-  //redirect: "https://soundmatch-api.onrender.com/handleSpotify"
-  redirect: "http://localhost:3000/handleSpotify",
+  redirect: "https://soundmatch-api.onrender.com/callbackSpotify"
+  //redirect: "http://localhost:3000/callbackSpotify",
 };
 
 const googleScope = [
@@ -130,14 +130,14 @@ const validateToken = (token, callback) => {
 };
 
 //Spotify OAUTH 2.0 generation and validation
-const generateSpotifyAccessToken = async (code, callback) => {
+const generateSpotifyAccessToken = async (code) => {
   const base64Credentials = Buffer.from(
     `${spotifyConfig.client_id}:${spotifyConfig.client_secret}`
   ).toString("base64");
 
   const params = new URLSearchParams();
   params.append("code", code);
-  params.append("redirect_uri", spotifyConfig.redirect_uri);
+  params.append("redirect_uri", spotifyConfig.redirect);
   params.append("grant_type", "authorization_code");
 
   try {
@@ -150,11 +150,15 @@ const generateSpotifyAccessToken = async (code, callback) => {
       body: params,
     });
 
+    if (!response.ok) {
+      throw new Error(`Failed to obtain Spotify access token: ${response.statusText}`);
+    }
+
     const data = await response.json();
-    console.log(response);
-    callback(false, data);
+    return data;
   } catch (error) {
-    callback(true, error.message);
+    console.error('Error generating Spotify access token:', error.message);
+    throw error;
   }
 };
 
