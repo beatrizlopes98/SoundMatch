@@ -4,6 +4,7 @@ const { handleError } = require("../Services/error");
 // Common validation middleware for all routes
 exports.validateFields = (req, res, next) => {
   const errors = validationResult(req);
+  console.log("Validation")
   if (!errors.isEmpty()) {
     return handleError(res, 400, errors.array());
   }
