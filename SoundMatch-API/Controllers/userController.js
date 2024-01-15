@@ -140,7 +140,8 @@ exports.addMusicToLikes = async function (req, res) {
 exports.editGenresToUser = async function (req, res) {
   try {
     const { genres } = req.body;
-
+    console.log(genres)
+    console.log(req.user)
     const user = await users.findOne({ email: req.user });
 
     if (!user) {
