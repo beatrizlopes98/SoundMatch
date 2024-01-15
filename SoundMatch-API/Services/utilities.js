@@ -53,6 +53,8 @@ exports.generateJSWToken = (user_info, callback) => {
 
 exports.validateJSWToken = (token) => {
   return new Promise((resolve, reject) => {
+    console.log("--------------------------------")
+    console.log(token)
     if (!token) {
       reject("Token is missing");
     }
