@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Button, StyleSheet, Dimensions } from 'react-native';
+import { View, Button, StyleSheet, Dimensions, Alert } from 'react-native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -33,6 +36,45 @@ const GenderSelect = ({navigation}) => {
       setSelectedGenres([...selectedGenres, genre]);
     }
   };
+  const saveSelectedGenres = async () => {
+    try {
+      // Retrieve the access token from AsyncStorage
+      const token = await AsyncStorage.getItem('token');
+
+      if (!token) {
+        // Handle the case where the token is not available
+        Alert.alert('Error', 'Token not available. Please log in again.');
+        return;
+      }
+
+      // Make a PUT request to update the profile using Axios
+      const response = await axios.put(
+        'https://soundmatch-api.onrender.com/user/add-genres',
+        {
+          "genres": selectedGenres
+          // Add other fields you want to update in the API request
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        // Profile updated successfully
+        Alert.alert('Success', 'Genres added successfully');
+        navigation.navigate('MainTabs')
+      } else {
+        // Handle failed profile update or show error message
+        Alert.alert('Error', 'Failed to add genres. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error during genres add:', error);
+      Alert.alert('Error', 'An unexpected error occurred. Please try again later.');
+    }
+  };
 
   useEffect(() => {
     console.log('Selected Genres:', selectedGenres);
@@ -52,7 +94,10 @@ const GenderSelect = ({navigation}) => {
       ))}
     </View>
     <View style={{flex:1}}>
-        <Button title='DONE' onPress={()=> { navigation.navigate("MainTabs")}} ></Button>
+        <Button title='DONE' onPress={saveSelectedGenres} ></Button>
+    </View>
+    <View style={{flex:1}}>
+        <Button title='NEXT PAGE' onPress={()=>navigation.navigate('MainTabs')} ></Button>
     </View>
     </View>
   );

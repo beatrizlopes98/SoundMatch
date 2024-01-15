@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Image } from 'react-native';
 import COLORS from '../constants/colors';
 
+defaultImageCover = require('../assets/sound.png')
+
 const PlaylistScreen = ({ route, navigation }) => {
   const { playlistData } = route.params;
-  const { title, image } = playlistData;
+  const { title, imageCover} = playlistData;
   const [isModalVisible, setModalVisible] = useState(false);
 
   // Sample music data (replace with your actual data)
@@ -31,8 +33,8 @@ const PlaylistScreen = ({ route, navigation }) => {
       >
         <Image source={require('../assets/backward.png')} style={styles.backArrowImage} />
       </TouchableOpacity>
-      <Image source={playlistData.image} style={styles.playlistImage} />
-      <Text style={styles.playlistTitle}>{playlistData.title}</Text>
+      <Image source={imageCover} style={styles.playlistImage} />
+      <Text style={styles.playlistTitle}>{title}</Text>
 
       {/* Music List */}
       <FlatList

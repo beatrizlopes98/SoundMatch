@@ -15,7 +15,7 @@ const TabNavigator = () => {
     <Tab.Navigator screenOptions={{
       headerShown: false,
       gestureEnabled: true,
-      gestureDirection: 'horizontal',
+      gestureDirection: 'horizontal', 
       tabBarActiveTintColor: COLORS.lavanda,
       tabBarStyle: {
         height:'7%',

@@ -29,7 +29,7 @@ const Discover = ({ navigation,route }) => {
   <TouchableOpacity
     key={item.id}
     style={styles.playlistSquare}
-    onPress={() => navigation.navigate("PlaylistScreen", { playlistData: { id: item.id, title: item.title, image: item.imageUrl } })}
+    onPress={() => navigation.navigate("PlaylistScreen", { playlistData: { id: item.id, title: item.title, imageCover: item.imageUrl } })}
   >
     <Image source={item.imageUrl} style={styles.playlistImage} />
     <View style={styles.playlistTitleContainer}>

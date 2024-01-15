@@ -11,6 +11,8 @@ import React, {useState, useEffect} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import COLORS from '../constants/colors';
 import {Image, Linking} from 'react-native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const Login = ({navigation}, props) => {
@@ -40,25 +42,30 @@ const Login = ({navigation}, props) => {
   
   const handleLogin = async () => {
     try {
-      const response = await fetch('https://soundmatch-api.onrender.com/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        // Navigate to the main tabs screen on successful login
-        navigation.navigate('MainTabs');
-      } else {
-        // Handle failed login or show error message
-        Alert.alert('Login Failed', 'Invalid email or password');
-      }
+      const response = await axios.post('https://soundmatch-api.onrender.com/login', { email, password });
+      
+      // Assuming your API returns a token in the response
+      const token = response.data.token;
+  
+      // Store the token in AsyncStorage
+      await AsyncStorage.setItem('token', token);
+  
+      navigation.navigate('MainTabs');
+      console.log(token);
     } catch (error) {
-      console.error('Error during login:', error);
+      console.log(error.response.data.message);
     }
   };
+    
+  /* axios.post('https://soundmatch-api.onrender.com/login',{ email, password })
+    .then(function (response) {
+      navigation.navigate('MainTabs');
+      console.log(response.data.token);
+    })
+    .catch(function (error) {
+      console.log(error.response.data.message);
+    });
+  }; */
 
   return (
     <SafeAreaView style={{flex: 1}}>

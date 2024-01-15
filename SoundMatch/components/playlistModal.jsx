@@ -14,6 +14,7 @@ const PlaylistModal = ({ visible, onClose, onSaveChanges, editIndex, playlists }
   }, [editIndex, playlists]);
 
   const handleSaveChanges = () => {
+    
     onSaveChanges(playlistName);
   };
 

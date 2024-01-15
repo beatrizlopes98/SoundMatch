@@ -1,8 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import COLORS from '../constants/colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { CommonActions } from '@react-navigation/native';
 
 
 const Profile = ({ navigation }) => {
@@ -22,20 +25,32 @@ const Profile = ({ navigation }) => {
     };
     const handleSaveProfile = async () => {
       try {
-        // Assuming your API endpoint for updating the profile is "/edit"
-        const response = await fetch('https://soundmatch-api.onrender.com/edit', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+        // Retrieve the access token from AsyncStorage
+        const token = await AsyncStorage.getItem('token');
+  
+        if (!token) {
+          // Handle the case where the token is not available
+          Alert.alert('Error', 'Token not available. Please log in again.');
+          return;
+        }
+  
+        // Make a PUT request to update the profile using Axios
+        const response = await axios.put(
+          'https://soundmatch-api.onrender.com/user/edit',
+          {
             name,
             password,
             // Add other fields you want to update in the API request
-          }),
-        });
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
   
-        if (response.ok) {
+        if (response.status === 200) {
           // Profile updated successfully
           Alert.alert('Success', 'Profile updated successfully');
         } else {
@@ -47,6 +62,53 @@ const Profile = ({ navigation }) => {
         Alert.alert('Error', 'An unexpected error occurred. Please try again later.');
       }
     };
+    useEffect(() => {
+      const fetchUserProfile = async () => {
+        try {
+          // Retrieve the access token from AsyncStorage
+          const token = await AsyncStorage.getItem('token');
+          console.log(token)
+  
+          if (token) {
+            // Fetch user profile using the access token
+            const response = await axios.get('https://soundmatch-api.onrender.com/user/profile', {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+  
+            const userData = response.data.user;
+  
+            // Set user data in state
+            setName(userData.name);
+            // You may choose not to pre-fill the password for security reasons
+            // setPassword(userData.password);
+          }
+        } catch (error) {
+          console.log('Error fetching user profile:', error);
+        }
+      };
+  
+      fetchUserProfile();
+    }, []);
+    const handleLogout = async () => {
+      try {
+        // Clear the access token from AsyncStorage
+        await AsyncStorage.removeItem('token');
+        // You may need to clear other user-related data from AsyncStorage
+    
+        // Navigate to the login screen or any screen that makes sense
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'LoadingPage' }],
+          })
+        );
+      } catch (error) {
+        console.error('Error during logout:', error);
+        // Handle logout error if needed
+      }
+    };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -55,6 +117,12 @@ const Profile = ({ navigation }) => {
         onPress={() => navigation.goBack()}
       >
         <Image source={require('../assets/backward.png')} style={styles.backArrowImage} />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.logout}
+        onPress={handleLogout}
+      >
+        <Image source={require('../assets/logout.png')} style={styles.logoutImage} />
       </TouchableOpacity>
       <View style={{ flex: 1, marginHorizontal: 22 }}>
         {/* Profile Image */}
@@ -87,7 +155,7 @@ const Profile = ({ navigation }) => {
                             width: "100%"
                         }}
                         value={name}
-                        onChangeText={(text) => setName(text)}/>
+                        onChangeText={setName}/>
                     </View>
                     <Text
             style={{
@@ -116,7 +184,7 @@ const Profile = ({ navigation }) => {
                 width: '100%',
               }}
               value={password}
-              onChangeText={(text) => setPassword(text)}
+              onChangeText={setPassword}
             />
 
             <TouchableOpacity
@@ -162,6 +230,16 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   backArrowImage: {
+    width: 30,
+    height: 30,
+  },
+  logout: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    zIndex: 1,
+  },
+  logoutImage: {
     width: 30,
     height: 30,
   },

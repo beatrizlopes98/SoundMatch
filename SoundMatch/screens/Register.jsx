@@ -3,6 +3,8 @@ import React, {useState} from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import COLORS from '../constants/colors';
 import { Image, Linking } from 'react-native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Register = ({navigation}, props) => {
     const [isPasswordShown, setPasswordShown] = useState(true);
@@ -20,7 +22,7 @@ const Register = ({navigation}, props) => {
             // Initiate Google login with redirect_uri
             await Linking.openURL(urlGoogle);
 
-            navigation.navigate('MainTabs');
+            navigation.navigate('GenderSelect');
       
           } else {
             console.error('Failed to fetch sign-in link');
@@ -29,27 +31,22 @@ const Register = ({navigation}, props) => {
           console.error('Error while fetching sign-in link:', error);
         }
       };
-      const handleRegister = async () => {
-        try {
-          const response = await fetch('https://soundmatch-api.onrender.com/register', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name, email, password }),
-          });
+    const handleRegister = async () => {
+    try {
+        const response = await axios.post('https://soundmatch-api.onrender.com/register', {name, email, password });
+        
+        // Assuming your API returns a token in the response
+        const token = response.data.token;
     
-          if (response.ok) {
-            // Navigate to the gender select screen on successful registration
-            navigation.navigate('GenderSelect');
-          } else {
-            // Handle failed registration or show error message
-            Alert.alert('Registration Failed', 'Email might be already in use or invalid');
-          }
-        } catch (error) {
-          console.error('Error during registration:', error);
-        }
-      };
+        // Store the token in AsyncStorage
+        await AsyncStorage.setItem('token', token);
+    
+        navigation.navigate('GenderSelect');
+        console.log(token);
+    } catch (error) {
+        console.log(error.response.data.message);
+    }
+    };
     return (
         <SafeAreaView style={{flex:1}}>
             <View style={{flex:0.8, marginHorizontal:22}}>
