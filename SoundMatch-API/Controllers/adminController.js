@@ -32,8 +32,7 @@ exports.getAllMusics = async function (req, res) {
 
 exports.deleteAllUsers = async function (req, res) {
   try {
-    console.log(req.user.email);
-    //await users.deleteMany({ email: { $ne:req.user.email } });
+    //await users.deleteMany({});
     res.status(204).end();
   } catch (error) {
     handleError(res, 500, `Error deleting all users: ${error}`);

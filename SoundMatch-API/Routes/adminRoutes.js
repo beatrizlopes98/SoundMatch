@@ -10,7 +10,7 @@ router.get("/playlists",isAuthenticated, isAdmin, (req, res) => {
 });
 
 // Route to get all users
-router.get("/users",isAuthenticated, isAdmin, (req, res) => {
+router.get("/users",isAuthenticated, isAdmin,(req, res) => {
   console.log("Get All Users");
   adminController.getAllUsers(req, res);
 });
