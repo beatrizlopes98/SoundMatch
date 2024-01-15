@@ -9,7 +9,7 @@ const saltRounds = 10;
 exports.getUserProfile = async function (req, res) {
   try {
     const user = await users.findOne({ email: req.user });
-    console.log(req.user)
+    //console.log(req.user)
 
     if (!user) {
       return handleError(res, 404, "User not found");
@@ -32,7 +32,7 @@ exports.getUserProfile = async function (req, res) {
 exports.editUserProfile = async function (req, res) {
   try {
     const { name, password } = req.body;
-    console.log(req.user)
+    //console.log(req.user)
 
     const user = await users.findOne({ email: req.user });
 
