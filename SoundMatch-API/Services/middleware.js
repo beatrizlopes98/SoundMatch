@@ -22,7 +22,7 @@ const isAuthenticated = async (req, res, next) => {
 };
 
 const isAdmin = (req, res, next) => {
-  if (req.user && req.user.email === "admin@mail.com") {
+  if (req.user && req.user === "admin@mail.com") {
     console.log("User is an admin");
     next();
   } else {
