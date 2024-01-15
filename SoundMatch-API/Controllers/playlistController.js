@@ -59,7 +59,7 @@ exports.createPlaylist = async function (req, res) {
     }
     const newPlaylist = new playlists({
       title,
-      imageCover: "",
+      imageCover: "../assets/sound.png",
       userId: user._id,
     });
 

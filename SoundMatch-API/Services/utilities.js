@@ -1,6 +1,6 @@
 var jwt = require("jsonwebtoken");
 const { google } = require("googleapis");
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 const { handleError } = require("./error");
 
 const secret = process.env.SECRET;
@@ -13,30 +13,19 @@ const googleConfig = {
 };
 
 const spotifyConfig = {
-  client_id:"32bbc37fbca044c39ce1a7a22b2d8658",
+  client_id: "32bbc37fbca044c39ce1a7a22b2d8658",
   client_secret: "bb679316c1f44cbe95c73491810a8e72",
   //redirect: "https://soundmatch-api.onrender.com/handleSpotify"
-  redirect: "http://localhost:3000/handleSpotify"
+  redirect: "http://localhost:3000/handleSpotify",
 };
 
-const generateSpotifyAuthUrl = () => {
-  const scope = 'user-read-private user-read-email'; // Add any additional scopes as needed
-  const state = 'some-state'; // A unique value to prevent CSRF attacks
-  const redirectUri = encodeURIComponent(spotifyConfig.redirect_uri);
-  const clientId = encodeURIComponent(spotifyConfig.client_id);
-
-  const spotifyAuthUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}&scope=${encodeURIComponent(scope)}&redirect_uri=${redirectUri}&state=${state}`;
-
-  return spotifyAuthUrl;
-};
-
-exports.generateSpotifyAuthUrl = generateSpotifyAuthUrl;
-
-
-const defaultScope = [
+const googleScope = [
   "https://www.googleapis.com/auth/userinfo.profile",
   "https://www.googleapis.com/auth/userinfo.email",
 ];
+
+const spotifyScope =
+  "ugc-image-upload playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public user-read-private user-read-email";
 
 
 //JSON WEB TOKEN generation and validation
@@ -67,7 +56,6 @@ exports.validateJSWToken = (token) => {
   });
 };
 
-
 //GOOGLE OAUTH 2.0 generation and validation
 const createConnection = () =>
   new google.auth.OAuth2(
@@ -80,7 +68,7 @@ const getConnectionUrl = (auth) =>
   auth.generateAuthUrl({
     access_type: "offline",
     prompt: "consent",
-    scope: defaultScope,
+    scope: googleScope,
   });
 
 const urlGoogle = () => {
@@ -141,36 +129,48 @@ const validateToken = (token, callback) => {
   });
 };
 
-
 //Spotify OAUTH 2.0 generation and validation
 const generateSpotifyAccessToken = async (code, callback) => {
-  const base64Credentials = Buffer.from(`${spotifyConfig.client_id}:${spotifyConfig.client_secret}`).toString('base64');
+  const base64Credentials = Buffer.from(
+    `${spotifyConfig.client_id}:${spotifyConfig.client_secret}`
+  ).toString("base64");
 
   const params = new URLSearchParams();
-  params.append('code', code);
-  params.append('redirect_uri', spotifyConfig.redirect_uri);
-  params.append('grant_type', 'authorization_code');
+  params.append("code", code);
+  params.append("redirect_uri", spotifyConfig.redirect_uri);
+  params.append("grant_type", "authorization_code");
 
   try {
-    const response = await fetch('https://accounts.spotify.com/api/token', {
-      method: 'POST',
+    const response = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': `Basic ${base64Credentials}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${base64Credentials}`,
       },
       body: params,
     });
 
     const data = await response.json();
-    console.log(response.json)
+    console.log(response);
     callback(false, data);
   } catch (error) {
     callback(true, error.message);
   }
 };
 
-exports.generateSpotifyAccessToken = generateSpotifyAccessToken;
+const generateSpotifyAuthUrl = () => {
+  const scope = encodeURIComponent(spotifyScope);
+  const state = encodeURIComponent("some-state")
+  const redirectUri = encodeURIComponent(spotifyConfig.redirect);
+  const clientId = encodeURIComponent(spotifyConfig.client_id);
 
+  const spotifyAuthUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}&scope=${scope}&redirect_uri=${redirectUri}&state=${state}`;
+
+  return spotifyAuthUrl;
+};
+
+exports.generateSpotifyAccessToken = generateSpotifyAccessToken;
+exports.generateSpotifyAuthUrl = generateSpotifyAuthUrl;
 
 exports.createConnection = createConnection;
 exports.generateAuthUrl = getConnectionUrl;
