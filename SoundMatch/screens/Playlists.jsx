@@ -198,28 +198,35 @@ const Playlists = ({ navigation }) => {
       <RefreshControl refreshing={refreshing} onRefresh={() => fetchUserPlaylists()} />
     }>
       {playlists.map((playlist, index) => {
-        return(
-        <TouchableOpacity
-          onPress={() => navigation.navigate('PlaylistScreen', { playlistData: playlist })}
-          key={index}
-          style={{ padding: 5, backgroundColor: COLORS.purple, borderRadius: 5, marginBottom:5 }}
-        >
-          <Image source={defaultPlaylistImage} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
-          <Text>{playlist.title}</Text>
-          <Text style={{ marginTop: 3, opacity: 0.3, fontSize: 14 }}>{playlist.music.length} songs</Text>
-          <View style={{ flexDirection: 'row', marginTop: 5 }}>
-            <TouchableOpacity onPress={() => handleDeletePlaylist(index)} style={{ marginRight: 10 }}>
-              <Text style={{ color: COLORS.red }}>Delete</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() =>{setEditIndex(index),setModalVisible(true)}} style={{ marginRight: 10 }}>
-              <Text style={{ color: COLORS.blue }}>Edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => console.log('Share')}>
-              <Text style={{ color: COLORS.blue }}>Share</Text>
-            </TouchableOpacity>
-          </View>
+  const isLikedSongsPlaylist = playlist.title === 'Liked songs';
+
+  return (
+    <TouchableOpacity
+      onPress={() => navigation.navigate('PlaylistScreen', { playlistData: playlist })}
+      key={index}
+      style={{ padding: 5, backgroundColor: COLORS.purple, borderRadius: 5, marginBottom: 5 }}
+    >
+      <Image source={defaultPlaylistImage} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
+      <Text>{playlist.title}</Text>
+      <Text style={{ marginTop: 3, opacity: 0.3, fontSize: 14 }}>{playlist.music.length} songs</Text>
+      <View style={{ flexDirection: 'row', marginTop: 5 }}>
+        {!isLikedSongsPlaylist && (
+          <TouchableOpacity onPress={() => handleDeletePlaylist(index)} style={{ marginRight: 10 }}>
+            <Text style={{ color: COLORS.red }}>Delete</Text>
+          </TouchableOpacity>
+        )}
+        {!isLikedSongsPlaylist && (
+        <TouchableOpacity onPress={() => { setEditIndex(index), setModalVisible(true) }} style={{ marginRight: 10 }}>
+          <Text style={{ color: COLORS.blue }}>Edit</Text>
         </TouchableOpacity>
-)})}
+        )}
+          <TouchableOpacity onPress={() => console.log('Share')}>
+            <Text style={{ color: COLORS.blue }}>Share</Text>
+          </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  );
+})}
       <TouchableOpacity onPress={() => setModalVisible(true)} style={{ marginTop: 15 }}>
         <Text style={{ color: COLORS.violet, letterSpacing: 1, fontWeight: 'bold', fontSize: 14, padding: 5 }}>+ Add New Playlist</Text>
       </TouchableOpacity>

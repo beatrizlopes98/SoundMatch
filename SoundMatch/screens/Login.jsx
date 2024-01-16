@@ -19,13 +19,16 @@ const Login = ({navigation}, props) => {
   const [isPasswordShown, setPasswordShown] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  
   const handleGoogleSignIn = async () => {
     try {
       const response = await fetch('https://soundmatch-api.onrender.com/google');
+      console.log(response);
   
       if (response.ok) {
         const responseData = await response.json();
         const { urlGoogle } = responseData;
+        console.log(responseData)
 
         // Initiate Google login with redirect_uri
         await Linking.openURL(urlGoogle);
