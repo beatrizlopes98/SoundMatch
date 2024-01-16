@@ -1,29 +1,81 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Image, RefreshControl, Alert } from 'react-native';
 import COLORS from '../constants/colors';
-import PlaylistModal from "../components/playlistModal";
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import PlaylistModal from '../components/playlistModal';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { handleAddPlaylist } from '../utilities/apiUtils'; // Adjust the path accordingly
 
-const defaultPlaylistImage= require('../assets/sound.png');
+const defaultPlaylistImage = require('../assets/sound.png');
 
 const Playlists = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [playlists, setPlaylists] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
+  const [refreshing, setRefreshing] = React.useState(false);
 
-  const handleAddPlaylist = async (playlistTitle, playlistImage) => {
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
+  useEffect(() => {
+    fetchUserPlaylists();
+  }, []);
+
+  const fetchUserPlaylists = async () => {
     try {
-      // Retrieve the access token from AsyncStorage
       const token = await AsyncStorage.getItem('token');
   
       if (token) {
-        // Make a POST request to create a new playlist
+        const response = await axios.get('https://soundmatch-api.onrender.com/playlist/all', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        const playlists = response.data.playlists;
+  
+        // Find the index of the "Liked Songs" playlist
+        const likedSongsIndex = playlists.findIndex(
+          (playlist) => playlist.title === 'Liked songs'
+        );
+  
+        // Move the "Liked Songs" playlist to the beginning if it exists
+        if (likedSongsIndex !== -1) {
+          const likedSongsPlaylist = {
+            ...playlists[likedSongsIndex],
+            imageCover: '../assets/heart.png', // Change the imageCover here
+          };
+  
+          // Remove the "Liked Songs" playlist from its original position
+          playlists.splice(likedSongsIndex, 1);
+  
+          // Add the "Liked Songs" playlist at the beginning
+          playlists.unshift(likedSongsPlaylist);
+        }
+  
+        // Set the playlists in state
+        setPlaylists(playlists);
+      }
+    } catch (error) {
+      console.log('Error fetching user playlists:', error);
+    }
+  };
+  
+
+  const handleAddPlaylist = async (playlistTitle) => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+  
+      if (token) {
         const response = await axios.post(
           'https://soundmatch-api.onrender.com/playlist/create',
           {
             title: playlistTitle,
-            imageCover: playlistImage
+            // You can add any additional parameters here
           },
           {
             headers: {
@@ -32,71 +84,111 @@ const Playlists = ({ navigation }) => {
           }
         );
   
-        const newPlaylist = { title: response.data.playlist.title, music: [], imageCover: response.data.playlist.imageCover || defaultPlaylistImage };
-        setPlaylists([...playlists, newPlaylist]);
+        if (response.status === 201) {
+          // If the playlist is created successfully, update the local state
+          const newPlaylist = {
+            title: response.data.playlist.title,
+            music: [],
+            imageCover: defaultPlaylistImage, // Use the default image for new playlists
+          };
+  
+          setPlaylists([...playlists, newPlaylist]);
+          fetchUserPlaylists();
+        } else {
+          // Handle other response statuses if needed
+          console.log('Failed to create a playlist:', response);
+        }
       }
     } catch (error) {
       console.log('Error adding a new playlist:', error);
     }
-  }; 
+  };
+  
+
+  const handleEditPlaylist = async (index, playlistTitle) => {
+    try {
+      console.log(playlists)
+      console.log(index)
+      console.log(playlistTitle)
+      const playlistIdToEdit = playlists[index]._id; // Assuming your playlists array contains playlist objects with an '_id' field
+      const token = await AsyncStorage.getItem('token');
+      // Make HTTP request to your API to edit the playlist title
+      console.log(playlistTitle)
+      if (token) {
+      const response = await axios.put(`https://soundmatch-api.onrender.com/playlist/edit/${playlistIdToEdit}`, {
+        title: playlistTitle
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response);
+      if(response.status === 200) {
+        setPlaylists((prevPlaylists) => {
+          const updatedPlaylists = [...prevPlaylists];
+          updatedPlaylists[index].title = response.data.playlist.title;
+          return updatedPlaylists;
+        });
 
 
-  const handleEditPlaylist = (index, playlistTitle) => {
-    setEditIndex(index);
-    setModalVisible(true);
+
+        // Fetch the updated playlists from the API
+        fetchUserPlaylists();
+
+    }}
+  
+    } catch (error) {
+      // Handle errors, e.g., show an error message to the user
+      console.error(`Error editing playlist: ${error.message}`);
+    }
   };
 
-  const handleDeletePlaylist = (index) => {
-    const updatedPlaylists = [...playlists];
-    updatedPlaylists.splice(index, 1);
-    setPlaylists(updatedPlaylists);
-  };
-  useEffect(() => {
-    const fetchUserPlaylists = async () => {
-      try {
-        // Retrieve the access token from AsyncStorage
-        const token = await AsyncStorage.getItem('token');
-        console.log(token)
-
-        if (token) {
-          // Fetch user profile using the access token
-          const response = await axios.get('https://soundmatch-api.onrender.com/playlist/all', {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-
-          const playlists= response.data.playlists
-
-          // Set user data in state
-          setPlaylists(playlists);
-          // You may choose not to pre-fill the password for security reasons
-          // setPassword(userData.password);
+  const handleDeletePlaylist = async (playlistIdToDelete) => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+  
+      if (token) {
+        const response = await axios.delete(`https://soundmatch-api.onrender.com/playlist/delete/${playlistIdToDelete}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (response.status === 204) {
+          // If the API call is successful, update the local state
+          const updatedPlaylists = playlists.filter((playlist) => playlist._id !== playlistIdToDelete);
+          setPlaylists(updatedPlaylists);
+          Alert.alert('Success', 'Playlist deleted successfully');
+          fetchUserPlaylists();
         }
-      } catch (error) {
-        console.log('Error fetching user playlists:', error);
       }
-    };
-
-    fetchUserPlaylists();
-  }, []);
+    } catch (error) {
+      // Handle errors, e.g., show an error message to the user
+      console.error(`Error deleting playlist: ${error.message}`);
+    }
+  };
+  
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 20 }}>
-      {playlists.map((playlist, index) => (
+    <ScrollView contentContainerStyle={{ padding: 20 }}refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    }>
+      {playlists.map((playlist, index) => {
+        return(
         <TouchableOpacity
           onPress={() => navigation.navigate('PlaylistScreen', { playlistData: playlist })}
           key={index}
           style={{ padding: 5, backgroundColor: COLORS.purple, borderRadius: 5, marginBottom:5 }}
         >
-          <Image source={playlist.imageCover} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
+          <Image source={defaultPlaylistImage} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
           <Text>{playlist.title}</Text>
           <Text style={{ marginTop: 3, opacity: 0.3, fontSize: 14 }}>{playlist.music.length} songs</Text>
           <View style={{ flexDirection: 'row', marginTop: 5 }}>
-            <TouchableOpacity onPress={() => handleDeletePlaylist(index)} style={{ marginRight: 10 }}>
+            <TouchableOpacity onPress={() => handleDeletePlaylist(playlist._id)} style={{ marginRight: 10 }}>
               <Text style={{ color: COLORS.red }}>Delete</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleEditPlaylist(index, playlist.title)} style={{ marginRight: 10 }}>
+            <TouchableOpacity onPress={() =>{setEditIndex(index),setModalVisible(true)}} style={{ marginRight: 10 }}>
               <Text style={{ color: COLORS.blue }}>Edit</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => console.log('Share')}>
@@ -104,7 +196,7 @@ const Playlists = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
-      ))}
+)})}
       <TouchableOpacity onPress={() => setModalVisible(true)} style={{ marginTop: 15 }}>
         <Text style={{ color: COLORS.violet, letterSpacing: 1, fontWeight: 'bold', fontSize: 14, padding: 5 }}>+ Add New Playlist</Text>
       </TouchableOpacity>
@@ -114,11 +206,9 @@ const Playlists = ({ navigation }) => {
           setModalVisible(false);
           setEditIndex(null);
         }}
-        onSaveChanges={(title) => {
+        onSaveChanges={(index,title) => {
           if (editIndex !== null) {
-            const updatedPlaylists = [...playlists];
-            updatedPlaylists[editIndex] = { ...updatedPlaylists[editIndex], title };
-            setPlaylists(updatedPlaylists);
+            handleEditPlaylist(index, title);
           } else {
             handleAddPlaylist(title);
           }

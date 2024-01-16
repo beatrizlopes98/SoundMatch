@@ -15,7 +15,7 @@ const PlaylistModal = ({ visible, onClose, onSaveChanges, editIndex, playlists }
 
   const handleSaveChanges = () => {
     
-    onSaveChanges(playlistName);
+    onSaveChanges(editIndex, playlistName);
   };
 
   return (
@@ -26,10 +26,10 @@ const PlaylistModal = ({ visible, onClose, onSaveChanges, editIndex, playlists }
       onRequestClose={onClose}
     >
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <View style={{ backgroundColor: COLORS.white, padding: 20, borderRadius: 10, width: 300 }}>
-          <Text style={{ fontSize: 16, marginBottom: 10 }}>{editIndex !== null ? 'Edit' : 'Enter'} Playlist Name:</Text>
+        <View style={{ backgroundColor: COLORS.white, padding: 20, borderRadius: 10, width: 300, backgroundColor: COLORS.greyLight }}>
+          <Text style={{ fontSize: 16, marginBottom: 10, color: 'grey' }}>{editIndex !== null ? 'Edit' : 'Enter'} Playlist Name:</Text>
           <TextInput
-            style={{ borderWidth: 1, borderColor: COLORS.gray, borderRadius: 5, padding: 8, marginBottom: 10 }}
+            style={{ borderWidth: 1, borderColor: 'grey', borderRadius: 5, padding: 8, marginBottom: 10, color:'grey' }}
             value={playlistName}
             onChangeText={setPlaylistName}
           />

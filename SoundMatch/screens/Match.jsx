@@ -1,24 +1,61 @@
-import React, {useState} from "react";
-import { View, Text, Image, SafeAreaView, Dimensions, TouchableOpacity } from "react-native";
+import React, { useState } from 'react';
+import { View, Text, Image, SafeAreaView, Dimensions, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import COLORS from '../constants/colors';
 import Slider from '@react-native-community/slider';
+import { handleAddPlaylist } from '../utilities/apiUtils'; // Adjust the path accordingly
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
+
 const Match = () => {
-    const initialSongs = [
-        { title: 'Song 1', artist: 'Artist 1', image: require('../assets/danzaOrganica.jpg') },
-        { title: 'Song 2', artist: 'Artist 2', image: require('../assets/mauskovic.jpg') },
-        { title: 'Song 3', artist: 'Artist 3', image: require('../assets/abcDialect.jpg') },
-      ];
-      const [songs, setSongs] = useState(initialSongs);
-      const [currentSongIndex, setCurrentSongIndex] = useState(0);
+  const initialSongs = [
+    { title: 'Song 1', artist: 'Artist 1', image: require('../assets/danzaOrganica.jpg') },
+    { title: 'Song 2', artist: 'Artist 2', image: require('../assets/mauskovic.jpg') },
+    { title: 'Song 3', artist: 'Artist 3', image: require('../assets/abcDialect.jpg') },
+  ];
+  const [songs, setSongs] = useState(initialSongs);
+  const [currentSongIndex, setCurrentSongIndex] = useState(0);
+
+  const handleNope = () => {
+    setCurrentSongIndex((prevIndex) => (prevIndex + 1) % songs.length);
+  };
+
+  const handleLike = async () => {
+    const likedSongsPlaylistTitle = 'Liked songs';
+
+    try {
+      const token = await AsyncStorage.getItem('token');
+
+      if (token) {
+        const response = await axios.get('https://soundmatch-api.onrender.com/playlist/all', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const playlists = response.data.playlists;
+        const likedSongsPlaylist = playlists.find(
+          (playlist) => playlist.title === likedSongsPlaylistTitle
+        );
+
+        if (!likedSongsPlaylist) {
+          await handleAddPlaylist(likedSongsPlaylistTitle, token);
+        }
+
+        // Additional logic or navigation if needed
+        // ...
+
+        // Move to the next song
+        handleNope();
+      }
+    } catch (error) {
+      console.log('Error handling like:', error);
+    }
+  };
+
+  const currentSong = songs[currentSongIndex];
     
-      const handleNope = () => {
-        // Increment the index to move to the next song
-        setCurrentSongIndex((prevIndex) => (prevIndex + 1) % songs.length);
-      };
-    
-      const currentSong = songs[currentSongIndex];
    
     return(
         <SafeAreaView style={{flex:1, backgroundColor: COLORS.lavanda}}>
@@ -57,7 +94,7 @@ const Match = () => {
                     <Image source={require('../assets/addPlaylist.png')} style={{width:45, height:45, tintColor: COLORS.purple, marginTop: 20}}></Image>
                     <Text style={{color: COLORS.purple, fontSize:12}}>Add to Playlist</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{alignItems: 'center', justifyContent:'center'}} onPress={handleNope}>
+                <TouchableOpacity style={{alignItems: 'center', justifyContent:'center'}} onPress={handleLike}>
                     <Image source={require('../assets/heart.png')} style={{width:36, height:36, tintColor: COLORS.purple}}></Image>
                     <Text style={{color: COLORS.purple, fontSize:12}}>Like</Text>
                 </TouchableOpacity>
