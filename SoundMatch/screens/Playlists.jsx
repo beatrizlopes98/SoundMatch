@@ -144,9 +144,10 @@ const Playlists = ({ navigation }) => {
     }
   };
 
-  const handleDeletePlaylist = async (playlistIdToDelete) => {
+  const handleDeletePlaylist = async (index) => {
     try {
       const token = await AsyncStorage.getItem('token');
+      const playlistIdToDelete = playlists[index]._id;
   
       if (token) {
         const response = await axios.delete(`https://soundmatch-api.onrender.com/playlist/delete/${playlistIdToDelete}`, {
@@ -158,6 +159,26 @@ const Playlists = ({ navigation }) => {
         if (response.status === 204) {
           // If the API call is successful, update the local state
           const updatedPlaylists = playlists.filter((playlist) => playlist._id !== playlistIdToDelete);
+  
+          // Find the index of the "Liked Songs" playlist
+          const likedSongsIndex = updatedPlaylists.findIndex(
+            (playlist) => playlist.title === 'Liked songs'
+          );
+  
+          // Move the "Liked Songs" playlist to the beginning if it exists
+          if (likedSongsIndex !== -1) {
+            const likedSongsPlaylist = {
+              ...updatedPlaylists[likedSongsIndex],
+              imageCover: '../assets/heart.png', // Change the imageCover here
+            };
+  
+            // Remove the "Liked Songs" playlist from its original position
+            updatedPlaylists.splice(likedSongsIndex, 1);
+  
+            // Add the "Liked Songs" playlist at the beginning
+            updatedPlaylists.unshift(likedSongsPlaylist);
+          }
+  
           setPlaylists(updatedPlaylists);
           Alert.alert('Success', 'Playlist deleted successfully');
           fetchUserPlaylists();
@@ -169,10 +190,12 @@ const Playlists = ({ navigation }) => {
     }
   };
   
+  
+  
 
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}refreshControl={
-      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      <RefreshControl refreshing={refreshing} onRefresh={() => fetchUserPlaylists()} />
     }>
       {playlists.map((playlist, index) => {
         return(
@@ -185,7 +208,7 @@ const Playlists = ({ navigation }) => {
           <Text>{playlist.title}</Text>
           <Text style={{ marginTop: 3, opacity: 0.3, fontSize: 14 }}>{playlist.music.length} songs</Text>
           <View style={{ flexDirection: 'row', marginTop: 5 }}>
-            <TouchableOpacity onPress={() => handleDeletePlaylist(playlist._id)} style={{ marginRight: 10 }}>
+            <TouchableOpacity onPress={() => handleDeletePlaylist(index)} style={{ marginRight: 10 }}>
               <Text style={{ color: COLORS.red }}>Delete</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() =>{setEditIndex(index),setModalVisible(true)}} style={{ marginRight: 10 }}>
