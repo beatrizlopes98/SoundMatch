@@ -5,14 +5,14 @@ const { isAuthenticated, isConnected } = require("../Services/middleware");
 
 // Route to get public playlists
 router.get("/playlists", isAuthenticated, isConnected, (req, res) => {
-  console.log("Get Public Playlists");
-  spotifyController.getPlaylists(req, res);
+  console.log("Get Playlists");
+  spotifyController.getSpotifyPlaylists(req, res);
 });
 
 // Route to get public playlists
-router.get("/playlistById", isAuthenticated, isConnected, (req, res) => {
-  console.log("Get Private Playlists");
-  spotifyController.getPrivatePlaylists(req, res);
+router.get("/playlist/:playlistId", isAuthenticated, isConnected, (req, res) => {
+  console.log("Get Playlist By Id");
+  spotifyController.getSpotifyPlaylistById(req, res);
 });
 
 // Route to get genres

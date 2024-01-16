@@ -7,7 +7,8 @@ const musicSchema = new mongoose.Schema({
   imageURL: String,
   previewURL: String,
   duration: Number,
-  gender: Array
+  genres: Array,
+  spotifyId: String
 });
 
 const musics = mongoose.model("musics", musicSchema);
