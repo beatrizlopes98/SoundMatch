@@ -140,7 +140,7 @@ exports.deletePlaylist = async function (req, res) {
     }
 
     await user.save();
-    await playlists.findByIdAndDelete(loggedInUserId);
+    await playlists.findOneAndDelete({ userId: loggedInUserId });
 
     res.status(204).end();
   } catch (error) {
