@@ -96,10 +96,7 @@ const Match = () => {
     return(
         <SafeAreaView style={{flex:1, backgroundColor: COLORS.lavanda}}>
         <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
-            <View style={{marginBottom:40}}>
-                <Text style={{fontSize: 18, fontWeight:600, color: COLORS.black}}>Swipe right to like, swipe left to pass!</Text>
-            </View>
-            <View style={{width:280, height:320}}>
+            <View style={{width:280, height:320, marginTop: 50}}>
                 <Image  style={{width: 280, height: 280, borderRadius: 15 }} source={currentSong.image}></Image>
             </View>
             <View>
@@ -107,7 +104,7 @@ const Match = () => {
                 <Text style={{fontSize: 16, fontWeight:200, textAlign: 'center', color: COLORS.black }}>{currentSong.artist}</Text>
             </View>
             <View>
-                <Slider style={{width:350, height:40, marginTop: 15, flexDirection: 'row'}} value={10} minimumValue={0} maximumValue={100} thumbTintColor={COLORS.purple} minimumTrackTintColor={COLORS.purple} maximumTrackTintColor={COLORS.lavanda} onSlidingComplete={()=>{}}/>
+                <Slider style={{width:350, height:40, marginTop: 15, flexDirection: 'row'}} value={10} minimumValue={0} maximumValue={100} thumbTintColor={COLORS.purple} minimumTrackTintColor={COLORS.purple} maximumTrackTintColor={COLORS.black} onSlidingComplete={()=>{}}/>
                 <View style={{width: 340, flexDirection:'row', justifyContent: 'space-between'}}>
                     <Text style={{color:COLORS.black}}>0:00</Text>
                     <Text style={{color: COLORS.black}}>0:30</Text>

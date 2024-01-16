@@ -1,12 +1,13 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import COLORS from "../constants/colors";
 
 const Discover = ({ navigation,route }) => {
     const { params } = route;
   const updatedProfileImage = params?.updatedProfileImage;
   // Sample playlist data (replace with your actual data)
   const playlistData = [
-    { id: '1', title: 'Playlist 1', imageUrl: require('../assets/BarMediterraneo.jpg') },
+    { id: '1', title: 'Playlist 1', imageUrl: {uri: 'https://i.scdn.co/image/ab67616d0000b273cc2cf912462d8ae4ef856434'} },
     { id: '2', title: 'Playlist 2', imageUrl: require('../assets/mauskovic.jpg') },
     { id: '3', title: 'Playlist 3', imageUrl: require('../assets/danzaOrganica.jpg') },
     // Add more playlist items as needed
@@ -22,6 +23,7 @@ const Discover = ({ navigation,route }) => {
         </View>
         </TouchableOpacity>
       </View>
+      <View style={{justifyContent:'center', alignItems:'center'}}><Text style={{color:COLORS.black, fontSize:20}}>Recommended Playlists</Text></View>
 
       <View style={styles.mainContent}>
         {/* Recommended Playlist Squares */}
