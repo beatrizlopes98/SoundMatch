@@ -4,6 +4,7 @@ const playlistSchema = new mongoose.Schema({
   music: Array,
   title: String,
   imageCover: String,
+  externalUrl: String,
   userId: String
 });
 

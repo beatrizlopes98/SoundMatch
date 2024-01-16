@@ -60,6 +60,7 @@ exports.createPlaylist = async function (req, res) {
     const newPlaylist = new playlists({
       title,
       imageCover: "..&#x2F;assets&#x2F;sound.png",
+      externalUrl: "",
       userId: user._id,
     });
 
@@ -137,6 +138,7 @@ exports.deletePlaylist = async function (req, res) {
     if (index !== -1) {
       user.playlistId.splice(index, 1);
     }
+    console.log(user)
 
     await user.save();
     await playlists.findOneAndDelete({ userId: loggedInUserId });

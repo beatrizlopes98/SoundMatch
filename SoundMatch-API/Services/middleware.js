@@ -14,6 +14,7 @@ const isAuthenticated = async (req, res, next) => {
       }
       console.log("Authenticated via JWT token");
       req.user = payload.data.user;
+      console.log(req.user)
       next();
     }
   } catch (error) {

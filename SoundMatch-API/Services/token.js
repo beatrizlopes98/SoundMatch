@@ -195,6 +195,8 @@ const validateSpotifyToken = async (token) => {
       data: {
         user: {
           id: userData.id,
+          country: userData.country,
+          access_token: token 
         },
       },
     };
