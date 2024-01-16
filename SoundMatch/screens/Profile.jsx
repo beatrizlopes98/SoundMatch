@@ -132,11 +132,35 @@ const Profile = ({ navigation }) => {
             style={styles.profileImage}
           />
         </TouchableOpacity>
-        <View style={{marginBottom:12}}>
+        <View style={{borderWith: 1,
+              borderColor: COLORS.black,
+              height: 52}}>
+        <TouchableOpacity
+            onPress={()=>{}}
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'row',
+              height: 52,
+              borderWith: 1,
+              borderColor: COLORS.black,
+              marginRight: 4,
+              borderRadius: 10
+            }}>
+            <Image
+              source={require('../assets/spotify.png')}
+              style={{marginRight: 8, width: 36, height: 36}}></Image>
+
+            <Text style={{color: COLORS.black}}>Connect to your spotify account!</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{marginBottom:12, marginTop:20}}>
                     <Text style={{
                         fontSize: 16,
                         fontWeight: 400,
-                        marginVertical: 8
+                        marginVertical: 8,
+                        color: COLORS.black
                     }}>Name</Text>
                     <View style={{
                         width:"100%",
@@ -152,7 +176,8 @@ const Profile = ({ navigation }) => {
                         placeholder='Enter your name'
                         placeholderTextColor={COLORS.black}
                         style={{
-                            width: "100%"
+                            width: "100%",
+                            color: COLORS.black
                         }}
                         value={name}
                         onChangeText={setName}/>
@@ -162,6 +187,7 @@ const Profile = ({ navigation }) => {
               fontSize: 16,
               fontWeight: 400,
               marginVertical: 8,
+              color:COLORS.black
             }}>
             Password
           </Text>
