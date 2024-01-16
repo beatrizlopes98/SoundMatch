@@ -29,7 +29,7 @@ const spotifyScope =
 
 
 //JSON WEB TOKEN generation and validation
-exports.generateJSWToken = (user_info, callback) => {
+const generateJSWToken = (user_info, callback) => {
   let token = jwt.sign(
     {
       data: user_info,
@@ -40,7 +40,7 @@ exports.generateJSWToken = (user_info, callback) => {
   return callback(token);
 };
 
-exports.validateJSWToken = (token) => {
+const validateJSWToken = (token) => {
   return new Promise((resolve, reject) => {
     if (!token) {
       reject("Token is missing");
@@ -173,11 +173,42 @@ const generateSpotifyAuthUrl = () => {
   return spotifyAuthUrl;
 };
 
-exports.generateSpotifyAccessToken = generateSpotifyAccessToken;
-exports.generateSpotifyAuthUrl = generateSpotifyAuthUrl;
-exports.createConnection = createConnection;
-exports.generateAuthUrl = getConnectionUrl;
-exports.urlGoogle = urlGoogle;
-exports.getTokens = getTokens;
-exports.getUserInfo = getUserInfo;
-exports.validateToken = validateToken;
+const validateSpotifyToken = async (token) => {
+  const base64Credentials = Buffer.from(
+    `${spotifyConfig.client_id}:${spotifyConfig.client_secret}`
+  ).toString("base64");
+
+  try {
+    const response = await fetch("https://api.spotify.com/v1/me", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to validate Spotify token: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error validating Spotify token:', error.message);
+    throw error;
+  }
+};
+
+module.exports = {
+  generateJSWToken,
+  validateJSWToken,
+  generateSpotifyAccessToken,
+  generateSpotifyAuthUrl,
+  validateSpotifyToken,
+  createConnection,
+  getConnectionUrl,
+  urlGoogle,
+  getTokens,
+  getUserInfo,
+  validateToken
+};

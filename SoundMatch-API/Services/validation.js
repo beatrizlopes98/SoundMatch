@@ -36,7 +36,7 @@ exports.validateCreatePlaylist = [
 // Validation middleware for editing a playlist
 exports.validateEditPlaylist = [
   body("title").optional().notEmpty().isString().escape(),
-  body("imageCover").optional().notEmpty().isString().escape(),
+  //body("imageCover").optional().notEmpty().isString().escape(),
   exports.validateFields, // Adding common validation
 ];
 

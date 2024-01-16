@@ -21,6 +21,25 @@ const isAuthenticated = async (req, res, next) => {
   }
 };
 
+const isConnected = (req, res, next) => {
+  const spotifyToken = req.headers["x-spotify-token"];
+
+  try {
+    if (!spotifyToken) {
+      return handleError(res, 401, "Unauthorized: Spotify token is missing");
+    }
+
+    // Validate the Spotify token or perform additional checks as needed
+    // ...
+
+    console.log("Authenticated via Spotify token");
+    req.spotifyToken = spotifyToken;
+    next();
+  } catch (error) {
+    return handleError(res, 401, `Unauthorized: ${error.message}`);
+  }
+};
+
 const isAdmin = (req, res, next) => {
   if (req.user && req.user === "admin@mail.com") {
     console.log("User is an admin");
@@ -32,5 +51,6 @@ const isAdmin = (req, res, next) => {
 
 module.exports = {
   isAuthenticated,
+  isConnected,
   isAdmin,
 };

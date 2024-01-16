@@ -77,7 +77,7 @@ exports.createPlaylist = async function (req, res) {
 exports.editPlaylist = async function (req, res) {
   try {
     const { playlistId } = req.params;
-    const { title, imageCover } = req.body;
+    const { title } = req.body;
 
     const foundPlaylist = await playlists.findById(playlistId).exec();
     if (!foundPlaylist) {
@@ -103,8 +103,7 @@ exports.editPlaylist = async function (req, res) {
       return handleError(res, 406, "Duplicated Playlist Name");
     }
 
-    foundPlaylist.title = title;
-    foundPlaylist.imageCover = imageCover;
+    foundPlaylist.title = title
 
     const updatedPlaylist = await foundPlaylist.save();
 
