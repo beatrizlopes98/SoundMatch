@@ -1,5 +1,5 @@
 const { handleError } = require("./error");
-const { validateJSWToken } = require("../Services/token");
+const { validateJSWToken, validateSpotifyToken } = require("../Services/token");
 
 const isAuthenticated = async (req, res, next) => {
   const token = req.headers.authorization;
@@ -21,19 +21,21 @@ const isAuthenticated = async (req, res, next) => {
   }
 };
 
-const isConnected = (req, res, next) => {
+const isConnected = async (req, res, next) => {
   const spotifyToken = req.headers["x-spotify-token"];
-
   try {
     if (!spotifyToken) {
       return handleError(res, 401, "Unauthorized: Spotify token is missing");
     }
 
-    // Validate the Spotify token or perform additional checks as needed
-    // ...
+    const spotifyPayload = await validateSpotifyToken(spotifyToken);
+
+    if (!spotifyPayload) {
+      return handleError(res, 401, "Unauthorized: Invalid Spotify token");
+    }
 
     console.log("Authenticated via Spotify token");
-    req.spotifyToken = spotifyToken;
+    req.spotifyPayload = spotifyPayload;
     next();
   } catch (error) {
     return handleError(res, 401, `Unauthorized: ${error.message}`);

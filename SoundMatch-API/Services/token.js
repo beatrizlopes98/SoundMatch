@@ -174,10 +174,6 @@ const generateSpotifyAuthUrl = () => {
 };
 
 const validateSpotifyToken = async (token) => {
-  const base64Credentials = Buffer.from(
-    `${spotifyConfig.client_id}:${spotifyConfig.client_secret}`
-  ).toString("base64");
-
   try {
     const response = await fetch("https://api.spotify.com/v1/me", {
       method: "GET",
@@ -191,13 +187,26 @@ const validateSpotifyToken = async (token) => {
       throw new Error(`Failed to validate Spotify token: ${response.statusText}`);
     }
 
-    const data = await response.json();
-    return data;
+    const userData = await response.json();
+    console.log(userData);
+    console.log(userData.id)
+
+    const payload = {
+      data: {
+        user: {
+          id: userData.id,
+        },
+      },
+    };
+
+    return payload;
   } catch (error) {
     console.error('Error validating Spotify token:', error.message);
-    throw error;
+    return null;
   }
 };
+
+
 
 module.exports = {
   generateJSWToken,
