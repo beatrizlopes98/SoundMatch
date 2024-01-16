@@ -188,8 +188,6 @@ const validateSpotifyToken = async (token) => {
     }
 
     const userData = await response.json();
-    console.log(userData);
-    console.log(userData.id)
 
     const payload = {
       data: {
