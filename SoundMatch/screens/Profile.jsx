@@ -27,21 +27,26 @@ const Profile = ({ navigation }) => {
       try {
         // Retrieve the access token from AsyncStorage
         const token = await AsyncStorage.getItem('token');
-  
+    
         if (!token) {
           // Handle the case where the token is not available
           Alert.alert('Error', 'Token not available. Please log in again.');
           return;
         }
-  
+    
+        // Prepare the request payload
+        const payload = {
+          name,
+          // Add other fields you want to update in the API request
+    
+          // Include password in the payload only if it's not empty
+          ...(password && { password }),
+        };
+    
         // Make a PUT request to update the profile using Axios
         const response = await axios.put(
           'https://soundmatch-api.onrender.com/user/edit',
-          {
-            name,
-            password,
-            // Add other fields you want to update in the API request
-          },
+          payload,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -49,7 +54,7 @@ const Profile = ({ navigation }) => {
             },
           }
         );
-  
+    
         if (response.status === 200) {
           // Profile updated successfully
           Alert.alert('Success', 'Profile updated successfully');
