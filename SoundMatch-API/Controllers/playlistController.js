@@ -59,7 +59,7 @@ exports.createPlaylist = async function (req, res) {
     }
     const newPlaylist = new playlists({
       title,
-      imageCover: "..&#x2F;assets&#x2F;sound.png",
+      imageCover: "https://static.thenounproject.com/png/1459221-200.png",
       externalUrl: "",
       spotifyId: "",
       userId: user._id,

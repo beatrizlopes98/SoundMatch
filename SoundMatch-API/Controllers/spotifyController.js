@@ -27,7 +27,7 @@ exports.getSpotifyPlaylists = async function (req, res) {
           title: playlist.name,
           imageCover: playlist.images[0]
             ? playlist.images[0].url
-            : "..&#x2F;assets&#x2F;sound.png",
+            : "https://static.thenounproject.com/png/1459221-200.png",
           externalUrl: playlist.external_urls.spotify,
           spotifyId: playlist.id,
           userId: user._id,
@@ -100,6 +100,10 @@ exports.getSpotifyPlaylistById = async function (req, res) {
     for (const item of spotifyPlaylist.tracks.items) {
       const track = item.track;
 
+      console.log(track.artists.id)
+      console.log(track.artists.name)
+      console.log(track.artists.genres)
+
       const musicDetails = {
         name: track.name,
         artist: track.artists.map((artist) => artist.name).join(", "),
@@ -117,7 +121,7 @@ exports.getSpotifyPlaylistById = async function (req, res) {
       };
       
 
-      console.log(musicDetails)
+      //console.log(musicDetails)
 
       const existingMusic = await musics.findOne({
         spotifyId: musicDetails.spotifyId,
