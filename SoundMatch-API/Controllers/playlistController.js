@@ -61,6 +61,7 @@ exports.createPlaylist = async function (req, res) {
       title,
       imageCover: "..&#x2F;assets&#x2F;sound.png",
       externalUrl: "",
+      spotifyId: "",
       userId: user._id,
     });
 

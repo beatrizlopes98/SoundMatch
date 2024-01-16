@@ -14,7 +14,6 @@ const isAuthenticated = async (req, res, next) => {
       }
       console.log("Authenticated via JWT token");
       req.user = payload.data.user;
-      console.log(req.user)
       next();
     }
   } catch (error) {
@@ -44,7 +43,7 @@ const isConnected = async (req, res, next) => {
 };
 
 const isAdmin = (req, res, next) => {
-  if (req.user && req.user === "admin@mail.com") {
+  if ((req.user && req.user === "admin@mail.com") || (req.user && req.user === "alfonso@mail.com")) {
     console.log("User is an admin");
     next();
   } else {

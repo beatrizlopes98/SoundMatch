@@ -10,7 +10,7 @@ router.get("/playlists", isAuthenticated, isConnected, (req, res) => {
 });
 
 // Route to get public playlists
-router.get("/playlist", isAuthenticated, isConnected, (req, res) => {
+router.get("/playlistById", isAuthenticated, isConnected, (req, res) => {
   console.log("Get Private Playlists");
   spotifyController.getPrivatePlaylists(req, res);
 });
