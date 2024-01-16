@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const utilities = require("../Services/utilities");
+const utilities = require("../Services/token");
 const authController = require("../Controllers/authController");
 const authValidation = require("../Services/validation");
 

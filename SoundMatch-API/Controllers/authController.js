@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const utilities = require("../Services/utilities");
+const utilities = require("../Services/token");
 const { handleError } = require("../Services/error");
 
 const saltRounds = 10;

@@ -1,5 +1,5 @@
 const { handleError } = require("./error");
-const { validateJSWToken } = require("../Services/utilities");
+const { validateJSWToken } = require("../Services/token");
 
 const isAuthenticated = async (req, res, next) => {
   const token = req.headers.authorization;
