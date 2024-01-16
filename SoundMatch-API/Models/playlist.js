@@ -5,6 +5,7 @@ const playlistSchema = new mongoose.Schema({
   title: String,
   imageCover: String,
   externalUrl: String,
+  spotifyId: String,
   userId: String
 });
 

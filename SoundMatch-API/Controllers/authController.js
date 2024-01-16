@@ -13,14 +13,17 @@ exports.login = async function (req, res) {
       utilities.getTokens(req.query.code, req, res, (error, tokens) => {
         if (error) {
           handleError(res, 400, error);
+          return; // Add this line to stop further execution
         } else {
           utilities.getUserInfo(tokens.access_token, (error, user_info) => {
             if (error) {
               handleError(res, 400, error);
+              return; // Add this line to stop further execution
             } else {
               utilities.validateToken(tokens.id_token, (error, validToken) => {
                 if (error) {
                   handleError(res, 400, error);
+                  return; // Add this line to stop further execution
                 } else {
                   utilities.generateJSWToken({ user: user_info.email }, (token) => {
                     res.status(200).json({
@@ -48,6 +51,7 @@ exports.login = async function (req, res) {
 
       if (!foundUser) {
         handleError(res, 401, "User not found");
+        return; // Add this line to stop further execution
       }
 
       const isPasswordValid = bcrypt.compareSync(
@@ -69,6 +73,7 @@ exports.login = async function (req, res) {
     handleError(res, 500, `Error trying to Login: ${error}`);
   }
 };
+
 
 exports.register = function (req, res) {
   const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds);
