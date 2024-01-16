@@ -3,7 +3,8 @@ const { handleError } = require("../Services/error");
 const Playlist = require("../Models/playlist");
 
 exports.getPlaylists = async function (req, res) {
-  const userId = req.user.id;
+  const userId = req.user
+  console.log(userId)
 
   try {
     const playlistsData = await spotify.getPlaylists(
@@ -21,6 +22,7 @@ exports.getPlaylists = async function (req, res) {
       userId,
     }));
 
+    console.log(playlistsToSave)
     const savedPlaylists = await Playlist.insertMany(playlistsToSave);
 
     res.status(200).json(savedPlaylists);
