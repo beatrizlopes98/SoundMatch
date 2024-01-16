@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, SafeAreaView, Dimensions, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import COLORS from '../constants/colors';
 import Slider from '@react-native-community/slider';
 import { handleAddPlaylist } from '../utilities/apiUtils'; // Adjust the path accordingly
+import PlaylistSelectionModal from '../components/playlistSelectionModal';
 
 const { width, height } = Dimensions.get('window');
 
@@ -55,6 +56,41 @@ const Match = () => {
   };
 
   const currentSong = songs[currentSongIndex];
+  const [playlistModalVisible, setPlaylistModalVisible] = useState(false);
+  const [playlists, setPlaylists] = useState([]);
+  useEffect(() => {
+    fetchPlaylists();
+  }, []);
+
+  const fetchPlaylists = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        const response = await axios.get('https://soundmatch-api.onrender.com/playlist/all', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setPlaylists(response.data.playlists);
+      }
+    } catch (error) {
+      console.log('Error fetching playlists:', error);
+    }
+  };
+  const handleAddToPlaylist = () => {
+    setPlaylistModalVisible(true);
+  };
+  const handlePlaylistSelect = (selectedPlaylist) => {
+    // Logic to add the current song to the selected playlist
+    console.log('Adding to playlist:', selectedPlaylist.title);
+    setPlaylistModalVisible(false);
+  };
+
+  const handleCreatePlaylist = (newPlaylistName) => {
+    // Logic to create a new playlist with the given name and add the current song
+    console.log('Creating new playlist:', newPlaylistName);
+    setPlaylistModalVisible(false);
+  };
     
    
     return(
@@ -90,7 +126,7 @@ const Match = () => {
                     <Text style={{color: COLORS.purple, fontSize:12}}>Nope</Text>
                 </TouchableOpacity>
                 
-                <TouchableOpacity style={{alignItems: 'center', justifyContent:'center'}} onPress={()=>{}}>
+                <TouchableOpacity style={{alignItems: 'center', justifyContent:'center'}} onPress={handleAddToPlaylist}>
                     <Image source={require('../assets/addPlaylist.png')} style={{width:45, height:45, tintColor: COLORS.purple, marginTop: 20}}></Image>
                     <Text style={{color: COLORS.purple, fontSize:12}}>Add to Playlist</Text>
                 </TouchableOpacity>
@@ -100,6 +136,13 @@ const Match = () => {
                 </TouchableOpacity>
             </View>
         </View>
+        <PlaylistSelectionModal
+        visible={playlistModalVisible}
+        onClose={() => setPlaylistModalVisible(false)}
+        playlists={playlists}
+        onPlaylistSelect={handlePlaylistSelect}
+        onCreatePlaylist={handleCreatePlaylist}
+      />
         </SafeAreaView>
     )
 }
