@@ -1,26 +1,45 @@
-// PlaylistScreen.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Modal, Image } from 'react-native';
 import COLORS from '../constants/colors';
-
-defaultImageCover = require('../assets/sound.png')
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+const defaultImageCover = require('../assets/sound.png');
 
 const PlaylistScreen = ({ route, navigation }) => {
   const { playlistData } = route.params;
-  const { title, imageCover} = playlistData;
+  const { _id, title, imageCover } = playlistData;
   const [isModalVisible, setModalVisible] = useState(false);
+  const [musicData, setMusicData] = useState([]);
 
-  // Sample music data (replace with your actual data)
-  const musicData = [
-    { id: '1', title: 'Song 1' },
-    { id: '2', title: 'Song 2' },
-    { id: '3', title: 'Song 3' },
-    // Add more music items as needed
-  ];
+  useEffect(() => {
+    fetchPlaylistMusic();
+  }, []);
+
+  const fetchPlaylistMusic = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token'); // Fetch the token from AsyncStorage
+  
+      if (!token) {
+        // Handle the case where the token is not available
+        console.error('Token not available.');
+        return; 
+      }
+  
+      const response = await axios.get(`https://soundmatch-api.onrender.com/playlist/${_id}/music`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      setMusicData(response.data.playlist.music);
+    } catch (error) {
+      console.error('Error fetching playlist music:', error);
+    }
+  };
 
   const renderMusicItem = ({ item }) => (
     <View style={styles.musicItem}>
-      <Text style={{ color: '#333' }}>{item.title}</Text>
+      <Text style={{ color: '#333', fontWeight: 'bold' }}>{item.name}</Text>
     </View>
   );
 
@@ -33,7 +52,7 @@ const PlaylistScreen = ({ route, navigation }) => {
       >
         <Image source={require('../assets/backward.png')} style={styles.backArrowImage} />
       </TouchableOpacity>
-      <Image source={imageCover} style={styles.playlistImage} />
+      <Image source={{ uri: imageCover }} style={styles.playlistImage} />
       <Text style={styles.playlistTitle}>{title}</Text>
 
       {/* Music List */}
@@ -47,7 +66,7 @@ const PlaylistScreen = ({ route, navigation }) => {
         style={styles.shareButton}
         onPress={() => setModalVisible(true)}
       >
-        <Image source={require('../assets/more.png')} style={{width:40, height:40}}></Image>
+        <Image source={require('../assets/more.png')} style={{ width: 40, height: 40 }}></Image>
       </TouchableOpacity>
 
       {/* Share Modal */}

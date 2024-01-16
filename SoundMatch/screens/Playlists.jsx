@@ -396,4 +396,4 @@ const styles = StyleSheet.create( {
   },
 });
 
-export default Playlists;
+export default Playlists
