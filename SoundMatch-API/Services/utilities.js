@@ -175,7 +175,6 @@ const generateSpotifyAuthUrl = () => {
 
 exports.generateSpotifyAccessToken = generateSpotifyAccessToken;
 exports.generateSpotifyAuthUrl = generateSpotifyAuthUrl;
-
 exports.createConnection = createConnection;
 exports.generateAuthUrl = getConnectionUrl;
 exports.urlGoogle = urlGoogle;
