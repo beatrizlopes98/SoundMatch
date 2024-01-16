@@ -6,7 +6,7 @@ const { isAuthenticated } = require("../Services/middleware");
 
 // Route to get user profile
 router.get("/profile", isAuthenticated, (req, res) => {
-  console.log("Get Profile")
+  console.log("Get Profile");
   userController.getUserProfile(req, res);
 });
 
@@ -16,7 +16,7 @@ router.put(
   isAuthenticated,
   validation.validateEditUser,
   (req, res) => {
-    console.log("Edit Profile")
+    console.log("Edit Profile");
     userController.editUserProfile(req, res);
   }
 );
@@ -27,7 +27,7 @@ router.post(
   isAuthenticated,
   validation.validateMusicId,
   (req, res) => {
-    console.log("Add Music to Seens")
+    console.log("Add Music to Seens");
     userController.addMusicToSeen(req, res);
   }
 );
@@ -38,8 +38,19 @@ router.post(
   isAuthenticated,
   validation.validateMusicId,
   (req, res) => {
-    console.log("Add/Remove Music to Likes")
+    console.log("Add/Remove Music to Likes");
     userController.addMusicToLikes(req, res);
+  }
+);
+
+// Route to add genres to user
+router.put(
+  "/add-genres",
+  isAuthenticated,
+  validation.validateEditGenres,
+  (req, res) => {
+    console.log("Edit Genres to User");
+    userController.editGenresToUser(req, res);
   }
 );
 

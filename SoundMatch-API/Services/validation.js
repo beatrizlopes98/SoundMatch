@@ -4,6 +4,7 @@ const { handleError } = require("../Services/error");
 // Common validation middleware for all routes
 exports.validateFields = (req, res, next) => {
   const errors = validationResult(req);
+  console.log("Validation")
   if (!errors.isEmpty()) {
     return handleError(res, 400, errors.array());
   }
@@ -13,6 +14,13 @@ exports.validateFields = (req, res, next) => {
 // Validation middleware for user registration
 exports.validateRegistration = [
   body("name").notEmpty().isString().escape(),
+  body("email").isEmail().notEmpty().escape(),
+  body("password").isLength({ min: 5, max: 15 }).notEmpty().escape(),
+  exports.validateFields, // Adding common validation
+];
+
+// Validation middleware for user login
+exports.validateLogin = [
   body("email").isEmail().notEmpty().escape(),
   body("password").isLength({ min: 5, max: 15 }).notEmpty().escape(),
   exports.validateFields, // Adding common validation
@@ -28,7 +36,7 @@ exports.validateCreatePlaylist = [
 // Validation middleware for editing a playlist
 exports.validateEditPlaylist = [
   body("title").optional().notEmpty().isString().escape(),
-  body("imageCover").optional().notEmpty().isString().escape(),
+  //body("imageCover").optional().notEmpty().isString().escape(),
   exports.validateFields, // Adding common validation
 ];
 
@@ -37,6 +45,12 @@ exports.validateEditUser = [
   body("name").optional().notEmpty().isString().escape(),
   //body("email").optional().isEmail().notEmpty().escape(),
   body("password").optional().isLength({ min: 5, max: 15 }).notEmpty().escape(),
+  exports.validateFields, // Adding common validation
+];
+
+// Validation middleware for editing user profile
+exports.validateEditGenres = [
+  body("genres").isArray().escape(),
   exports.validateFields, // Adding common validation
 ];
 

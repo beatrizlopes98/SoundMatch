@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const utilities = require("../Services/utilities");
+const utilities = require("../Services/token");
 const { handleError } = require("../Services/error");
 
 const saltRounds = 10;
@@ -84,6 +84,7 @@ exports.register = function (req, res) {
         name: req.body.name,
         email: req.body.email,
         password: hashedPassword,
+        genres: [],
         seens: [],
         likes: [],
         playlistId: [],
@@ -92,7 +93,7 @@ exports.register = function (req, res) {
       users
         .create(newUser)
         .then((createdUser) => {
-          const user_info = { email: createdUser.email };
+          const user_info = { user: createdUser.email };
           utilities.generateJSWToken(user_info, (token) => {
             res.status(201).json({ token: token, user: createdUser });
           });

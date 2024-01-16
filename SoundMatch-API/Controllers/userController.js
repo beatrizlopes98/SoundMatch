@@ -9,6 +9,7 @@ const saltRounds = 10;
 exports.getUserProfile = async function (req, res) {
   try {
     const user = await users.findOne({ email: req.user });
+    //console.log(req.user)
 
     if (!user) {
       return handleError(res, 404, "User not found");
@@ -31,6 +32,7 @@ exports.getUserProfile = async function (req, res) {
 exports.editUserProfile = async function (req, res) {
   try {
     const { name, password } = req.body;
+    //console.log(req.user)
 
     const user = await users.findOne({ email: req.user });
 
@@ -134,5 +136,34 @@ exports.addMusicToLikes = async function (req, res) {
       500,
       `Error adding/removing music to/from likes: ${error}`
     );
+  }
+};
+
+exports.editGenresToUser = async function (req, res) {
+  try {
+    const { genres } = req.body;
+    console.log(genres)
+    console.log(req.user)
+    const user = await users.findOne({ email: req.user });
+
+    if (!user) {
+      return handleError(res, 404, "User not found");
+    }
+
+    if (user.email !== req.user) {
+      return handleError(
+        res,
+        403,
+        "Forbidden: You don't have permission to edit this profile"
+      );
+    }
+
+    user.genres = genres;
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({ user: updatedUser });
+  } catch (error) {
+    handleError(res, 500, `Error editing user profile: ${error}`);
   }
 };

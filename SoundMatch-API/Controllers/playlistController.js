@@ -59,7 +59,8 @@ exports.createPlaylist = async function (req, res) {
     }
     const newPlaylist = new playlists({
       title,
-      imageCover: "",
+      imageCover: "..&#x2F;assets&#x2F;sound.png",
+      externalUrl: "",
       userId: user._id,
     });
 
@@ -77,7 +78,7 @@ exports.createPlaylist = async function (req, res) {
 exports.editPlaylist = async function (req, res) {
   try {
     const { playlistId } = req.params;
-    const { title, imageCover } = req.body;
+    const { title } = req.body;
 
     const foundPlaylist = await playlists.findById(playlistId).exec();
     if (!foundPlaylist) {
@@ -103,8 +104,7 @@ exports.editPlaylist = async function (req, res) {
       return handleError(res, 406, "Duplicated Playlist Name");
     }
 
-    foundPlaylist.title = title;
-    foundPlaylist.imageCover = imageCover;
+    foundPlaylist.title = title
 
     const updatedPlaylist = await foundPlaylist.save();
 
@@ -138,9 +138,10 @@ exports.deletePlaylist = async function (req, res) {
     if (index !== -1) {
       user.playlistId.splice(index, 1);
     }
+    console.log(user)
 
     await user.save();
-    await playlists.findByIdAndDelete(loggedInUserId);
+    await playlists.findOneAndDelete({ _id: playlistId, userId: loggedInUserId });
 
     res.status(204).end();
   } catch (error) {
