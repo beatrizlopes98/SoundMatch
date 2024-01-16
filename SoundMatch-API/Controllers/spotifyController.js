@@ -77,7 +77,7 @@ exports.getSpotifyPlaylistById = async function (req, res) {
       existingPlaylist.title = spotifyPlaylist.name;
       existingPlaylist.imageCover = spotifyPlaylist.images[0]
         ? spotifyPlaylist.images[0].url
-        : "..&#x2F;assets&#x2F;sound.png";
+        : "https://static.thenounproject.com/png/1459221-200.png";
       existingPlaylist.externalUrl = spotifyPlaylist.external_urls.spotify;
 
       await existingPlaylist.save();
@@ -100,9 +100,9 @@ exports.getSpotifyPlaylistById = async function (req, res) {
     for (const item of spotifyPlaylist.tracks.items) {
       const track = item.track;
 
-      console.log(track.artists.id)
-      console.log(track.artists.name)
-      console.log(track.artists.genres)
+    //   console.log(track.artists.id)
+    //   console.log(track.artists.name)
+    //   console.log(track.artists.genres)
 
       const musicDetails = {
         name: track.name,
