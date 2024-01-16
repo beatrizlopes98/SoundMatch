@@ -36,20 +36,6 @@ const getPlaylistById = async (playlistId, accessToken) => {
     }
 
     const playlistData = await response.json();
-    
-    playlistData.tracks.items.forEach((item) => {
-      const track = item.track;
-      const artistGenres = track.artists.map((artist) => artist.genres).flat();
-
-      console.log({
-        name: track.name,
-        artist: track.artists.map((artist) => artist.name).join(", "),
-        album: track.album.name,
-        genres: artistGenres,
-        spotifyId: track.id,
-      });
-    });
-
     return playlistData;
   } catch (error) {
     throw new Error(`Error getting playlist by ID: ${error.message}`);

@@ -100,10 +100,6 @@ exports.getSpotifyPlaylistById = async function (req, res) {
     for (const item of spotifyPlaylist.tracks.items) {
       const track = item.track;
 
-    //   console.log(track.artists.id)
-    //   console.log(track.artists.name)
-    //   console.log(track.artists.genres)
-
       const musicDetails = {
         name: track.name,
         artist: track.artists.map((artist) => artist.name).join(", "),
@@ -119,9 +115,6 @@ exports.getSpotifyPlaylistById = async function (req, res) {
         }, []),
         spotifyId: track.id,
       };
-      
-
-      //console.log(musicDetails)
 
       const existingMusic = await musics.findOne({
         spotifyId: musicDetails.spotifyId,

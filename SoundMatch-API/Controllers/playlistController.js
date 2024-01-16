@@ -171,8 +171,7 @@ exports.deletePlaylist = async function (req, res) {
     if (index !== -1) {
       user.playlistId.splice(index, 1);
     }
-    console.log(user);
-
+    
     await user.save();
     await playlists.findOneAndDelete({
       _id: playlistId,
