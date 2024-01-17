@@ -4,7 +4,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import COLORS from './constants/colors'
-import {Login, Register, LoadingPage, Match, Playlists, Discover, GenderSelect, PlaylistScreen, Profile} from './screens';
+import {Login, Register, LoadingPage, Match, Playlists, Discover, GenderSelect, PlaylistScreen, Profile, MusicPreview} from './screens';
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator();
@@ -94,6 +94,13 @@ function App() {
         <Stack.Screen
           name='Profile'
           component={Profile}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name='MusicPreview'
+          component={MusicPreview}
           options={{
             headerShown: false,
           }}

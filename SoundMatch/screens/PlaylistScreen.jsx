@@ -38,9 +38,9 @@ const PlaylistScreen = ({ route, navigation }) => {
   };
 
   const renderMusicItem = ({ item }) => (
-    <View style={styles.musicItem}>
+    <TouchableOpacity style={styles.musicItem} onPress={()=>navigation.navigate('MusicPreview', { music: item })}>
       <Text style={{ color: '#333', fontWeight: 'bold' }}>{item.name}</Text>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
