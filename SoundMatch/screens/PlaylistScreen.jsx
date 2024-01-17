@@ -4,6 +4,7 @@ import COLORS from '../constants/colors';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const defaultImageCover = require('../assets/sound.png');
+const spotify_token = "BQBiAoQ_OWOQjDLU5O-bSUoqEROBkh8UnKsXqmMkIOiZXw2-KLUlH4wdFmKQSy8_GtlE6eepU7uj6_HP7MTOQbTUuoJQdwOFx0wssvLk2-FwmzqpRc_lRZyDuoPND27kebXkjdwYqy55IvwUOyJvm7y3q0G7U3q_6s-u14Gf73KwF2m1wi57M8s83fPAg_mLyRCYjqoSjVJugdX11uDvopzvgNgVpJ_wKxugMEBoGab68XIZsl0sVSW-LwvNrAonwLkQYYi-rQxbsfTZslsgdxsQJBJElEfO"
 
 const PlaylistScreen = ({ route, navigation }) => {
   const { playlistData } = route.params;

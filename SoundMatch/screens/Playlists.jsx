@@ -15,6 +15,7 @@ const Playlists = ({ navigation }) => {
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [nfcWriteInProgress, setNfcWriteInProgress] = useState(false);
 
+
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     fetchUserPlaylists();

@@ -9,7 +9,7 @@ import PlaylistSelectionModal from '../components/playlistSelectionModal';
 
 const { width, height } = Dimensions.get('window');
 
-const Match = () => {
+const Match = (route) => {
   const initialSongs = [
     { title: 'Song 1', artist: 'Artist 1', image: require('../assets/danzaOrganica.jpg') },
     { title: 'Song 2', artist: 'Artist 2', image: require('../assets/mauskovic.jpg') },
