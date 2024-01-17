@@ -1,5 +1,4 @@
 const { handleError } = require("../Services/error");
-
 const playlists = require("../Models/playlist").playlists;
 const users = require("../Models/user").users;
 const musics = require("../Models/music").musics;
@@ -21,6 +20,39 @@ exports.getPlaylistById = async function (req, res) {
         "Forbidden: You can only view your own playlists"
       );
     }
+
+    res.status(200).json({ playlist: foundPlaylist });
+  } catch (error) {
+    handleError(res, 500, `Error getting playlist by ID: ${error}`);
+  }
+};
+
+exports.getMusicFromPlaylistById = async function (req, res) {
+  try {
+    const { playlistId } = req.params;
+
+    const foundPlaylist = await playlists
+      .findById(playlistId)
+      .exec();
+
+    if (!foundPlaylist) {
+      return handleError(res, 404, "Playlist not found");
+    }
+
+    const user = await users.findOne({ email: req.user });
+    if (foundPlaylist.userId.toString() !== user._id.toString()) {
+      return handleError(
+        res,
+        403,
+        "Forbidden: You can only view your own playlists"
+      );
+    }
+
+    const musicDetails = await musics
+      .find({ spotifyId: { $in: foundPlaylist.music } })
+      .exec();
+
+    foundPlaylist.music = musicDetails;
 
     res.status(200).json({ playlist: foundPlaylist });
   } catch (error) {
@@ -105,7 +137,7 @@ exports.editPlaylist = async function (req, res) {
       return handleError(res, 406, "Duplicated Playlist Name");
     }
 
-    foundPlaylist.title = title
+    foundPlaylist.title = title;
 
     const updatedPlaylist = await foundPlaylist.save();
 
@@ -139,10 +171,12 @@ exports.deletePlaylist = async function (req, res) {
     if (index !== -1) {
       user.playlistId.splice(index, 1);
     }
-    console.log(user)
-
+    
     await user.save();
-    await playlists.findOneAndDelete({ _id: playlistId, userId: loggedInUserId });
+    await playlists.findOneAndDelete({
+      _id: playlistId,
+      userId: loggedInUserId,
+    });
 
     res.status(204).end();
   } catch (error) {

@@ -6,7 +6,7 @@ const { isAuthenticated } = require("../Services/middleware");
 
 // Route to get all playlists of the logged-in user
 router.get("/all", isAuthenticated, (req, res) => {
-  console.log("Get All Playlists")
+  console.log("Get All Playlists");
   playlistController.getAllPlaylists(req, res);
 });
 
@@ -16,8 +16,19 @@ router.get(
   isAuthenticated,
   validation.validatePlaylistId,
   (req, res) => {
-    console.log("Get Playlist By Id")
+    console.log("Get Playlist By Id");
     playlistController.getPlaylistById(req, res);
+  }
+);
+
+// Route to get musics playlist by ID
+router.get(
+  "/:playlistId/music",
+  isAuthenticated,
+  validation.validatePlaylistId,
+  (req, res) => {
+    console.log("Get Music From Playlist By Id");
+    playlistController.getMusicFromPlaylistById(req, res);
   }
 );
 
@@ -27,7 +38,7 @@ router.post(
   isAuthenticated,
   validation.validateCreatePlaylist,
   (req, res) => {
-    console.log("Create Playlist")
+    console.log("Create Playlist");
     playlistController.createPlaylist(req, res);
   }
 );
@@ -39,7 +50,7 @@ router.put(
   validation.validateEditPlaylist,
   validation.validatePlaylistId,
   (req, res) => {
-    console.log("Edit Playlist")
+    console.log("Edit Playlist");
     playlistController.editPlaylist(req, res);
   }
 );
@@ -50,7 +61,7 @@ router.delete(
   isAuthenticated,
   validation.validatePlaylistId,
   (req, res) => {
-    console.log("Delete Playlist")
+    console.log("Delete Playlist");
     playlistController.deletePlaylist(req, res);
   }
 );
@@ -62,7 +73,7 @@ router.put(
   validation.validatePlaylistId,
   validation.validateMusicId,
   (req, res) => {
-    console.log("Add/Remove Music from Playlist")
+    console.log("Add/Remove Music from Playlist");
     playlistController.addRemoveMusicFromPlaylist(req, res);
   }
 );

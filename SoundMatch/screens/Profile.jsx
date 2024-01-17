@@ -23,6 +23,28 @@ const Profile = ({ navigation }) => {
       // Navigate back to the Discover page and pass the updated image URL
       navigation.navigate('Discover', { updatedProfileImage: profileImage });
     };
+
+    const handleSpotifySignIn = async () => {
+      try {
+        const response = await fetch('https://soundmatch-api.onrender.com/spotify');
+    
+        if (response.ok) {
+          const responseData = await response.json();
+          const { urlSpotify } = responseData;
+  
+          // Initiate Google login with redirect_uri
+          await Linking.openURL(urlSpotify);
+  
+          //navigation.navigate('MainTabs');
+    
+        } else {
+          console.error('Failed to fetch sign-in link');
+        }
+      } catch (error) {
+        console.error('Error while fetching sign-in link:', error);
+      }
+    };
+
     const handleSaveProfile = async () => {
       try {
         // Retrieve the access token from AsyncStorage
@@ -141,7 +163,7 @@ const Profile = ({ navigation }) => {
               borderColor: COLORS.black,
               height: 52}}>
         <TouchableOpacity
-            onPress={()=>{}}
+            onPress={handleSpotifySignIn}
             style={{
               flex: 1,
               alignItems: 'center',

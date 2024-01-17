@@ -10,33 +10,43 @@ router.get("/playlists", isAuthenticated, isConnected, (req, res) => {
 });
 
 // Route to get public playlists
-router.get("/playlist/:playlistId", isAuthenticated, isConnected, (req, res) => {
-  console.log("Get Playlist By Id");
-  spotifyController.getSpotifyPlaylistById(req, res);
+router.get(
+  "/playlist/:playlistId",
+  isAuthenticated,
+  isConnected,
+  (req, res) => {
+    console.log("Get Playlist By Id");
+    spotifyController.getSpotifyPlaylistById(req, res);
+  }
+);
+
+// Route to get recommendations
+router.get("/recommendations", isAuthenticated, isConnected, (req, res) => {
+  console.log("Get Recommendation");
+  spotifyController.getRecommendations(req, res);
 });
 
 // Route to get genres
-router.get("/recomendations/genres", isAuthenticated, isConnected, (req, res) => {
-    console.log("Get Recomendation Genres");
-    spotifyController.getRecomendationGenres(req, res);
-  });
+router.get(
+  "/recommendations/genres",
+  isAuthenticated,
+  isConnected,
+  (req, res) => {
+    console.log("Get Recommendation Genres");
+    spotifyController.getRecommendationGenres(req, res);
+  }
+);
 
-// Route to get recomendations
-router.get("/recomendations", isAuthenticated, isConnected, (req, res) => {
-    console.log("Get Recomendation");
-    spotifyController.getRecomendations(req, res);
-  });
+// // Route to get music info
+// router.get("/music", isAuthenticated, isConnected, (req, res) => {
+//     console.log("Get Music");
+//     spotifyController.getMusic(req, res);
+//   });
 
-// Route to get music info
-router.get("/music", isAuthenticated, isConnected, (req, res) => {
-    console.log("Get Music");
-    spotifyController.getMusic(req, res);
-  });
-
-  // Route to get multiple musics infos
-router.get("/musics", isAuthenticated, isConnected, (req, res) => {
-    console.log("Get Multiple Musics");
-    spotifyController.getMusic(req, res);
-  });
+//   // Route to get multiple musics infos
+// router.get("/musics", isAuthenticated, isConnected, (req, res) => {
+//     console.log("Get Multiple Musics");
+//     spotifyController.getMusic(req, res);
+//   });
 
 module.exports = router;
