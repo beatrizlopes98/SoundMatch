@@ -2,8 +2,8 @@ const spotify = require("../Services/spotify");
 const { handleError } = require("../Services/error");
 
 const { playlists } = require("../Models/playlist");
-const { users } = require("../Models/user"); // Add this line
-const { musics } = require("../Models/music"); // Add this line
+const { users } = require("../Models/user");
+const { musics } = require("../Models/music");
 
 exports.getSpotifyPlaylists = async function (req, res) {
   const user = await users.findOne({ email: req.user });
@@ -90,7 +90,7 @@ exports.getSpotifyPlaylistById = async function (req, res) {
           : "..&#x2F;assets&#x2F;sound.png",
         externalUrl: spotifyPlaylist.external_urls.spotify,
         spotifyId: playlistId,
-        userId: user._id
+        userId: user._id,
       };
 
       const savedPlaylist = await playlists.create(playlistToSave);
@@ -137,5 +137,84 @@ exports.getSpotifyPlaylistById = async function (req, res) {
       500,
       `Error getting and saving Spotify playlist: ${error.message}`
     );
+  }
+};
+
+exports.getRecommendationGenres = async function (req, res) {
+  try {
+    const user = await users.findOne({ email: req.user });
+
+    const genres = await spotify.getRecommendationGenres(
+      req.spotifyPayload.data.user.access_token
+    );
+
+    user.genres = genres;
+    await user.save();
+
+    res.status(200).json({ genres });
+  } catch (error) {
+    handleError(
+      res,
+      500,
+      `Error getting and updating recommendation genres: ${error.message}`
+    );
+  }
+};
+
+exports.getRecommendations = async function (req, res) {
+  try {
+    const user = await users.findOne({ email: req.user });
+
+    const recommendations = await spotify.getRecommendations(
+      req.spotifyPayload.data.user.access_token,
+      user.genres
+    );
+
+    const trackIds = recommendations.map((track) => track.id);
+    
+    const fullTrackDetails = await spotify.getFullTrackDetails(
+      trackIds,
+      req.spotifyPayload.data.user.access_token
+    );
+
+    const processedRecommendations = await Promise.all(
+      fullTrackDetails.map(async (track) => {
+        const existingMusic = await musics.findOne({
+          spotifyId: track.spotifyId,
+        });
+
+        if (!existingMusic) {
+          const newMusic = new musics({
+            name: track.name,
+            artist: track.artist,
+            album: track.album.name,
+            imageURL: track.imageURL,
+            previewURL: track.previewURL,
+            duration: track.duration,
+            genres: track.genres,
+            spotifyId: track.spotifyId,
+          });
+
+          await newMusic.save();
+          return newMusic.toObject();
+        }
+
+        return existingMusic.toObject();
+      })
+    );
+
+    const uniqueRecommendations = [];
+    const seenSpotifyIds = new Set();
+
+    processedRecommendations.forEach((fullTrackDetails) => {
+      if (!seenSpotifyIds.has(fullTrackDetails.spotifyId)) {
+        seenSpotifyIds.add(fullTrackDetails.spotifyId);
+        uniqueRecommendations.push(fullTrackDetails);
+      }
+    });
+
+    res.status(200).json({ recommendations: uniqueRecommendations });
+  } catch (error) {
+    handleError(res, 500, `Error getting recommendations: ${error.message}`);
   }
 };
