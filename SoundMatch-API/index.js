@@ -1,4 +1,6 @@
 const express = require("express");
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger-output.json');
 const mongoConnection = require("./Connections/mongoDB").mongoConnection;
 
 require("dotenv").config();
@@ -19,6 +21,7 @@ app.use("/playlist", playlist);
 app.use("/admin", admin)
 app.use("/spotify", spotify)
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.listen(port, () => {
   console.log("App is running on http://localhost:" + port);
