@@ -4,10 +4,7 @@ import COLORS from '../constants/colors';
 import PlaylistModal from '../components/playlistModal';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import NfcManager, { NfcTech, Ndef } from 'react-native-nfc-manager'; // Import NfcManager and related modules
-import { handleAddPlaylist } from '../utilities/apiUtils';
-
-const defaultPlaylistImage = require('../assets/sound.png');
+import NfcManager, { NfcTech, Ndef } from 'react-native-nfc-manager';
 
 const Playlists = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -16,7 +13,7 @@ const Playlists = ({ navigation }) => {
   const [editIndex, setEditIndex] = useState(null);
   const [refreshing, setRefreshing] = React.useState(false);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
-  const [nfcSharing, setNfcSharing] = useState(false);
+  const [nfcWriteInProgress, setNfcWriteInProgress] = useState(false);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -28,6 +25,9 @@ const Playlists = ({ navigation }) => {
 
   useEffect(() => {
     fetchUserPlaylists();
+    return () => {
+      // No explicit NFC cleanup here.
+    };
   }, []);
 
   const fetchUserPlaylists = async () => {
@@ -44,9 +44,7 @@ const Playlists = ({ navigation }) => {
         const playlists = response.data.playlists;
 
         // Find the index of the "Liked Songs" playlist
-        const likedSongsIndex = playlists.findIndex(
-          (playlist) => playlist.title === 'Liked songs'
-        );
+        const likedSongsIndex = playlists.findIndex((playlist) => playlist.title === 'Liked songs');
 
         // Move the "Liked Songs" playlist to the beginning if it exists
         if (likedSongsIndex !== -1) {
@@ -69,12 +67,11 @@ const Playlists = ({ navigation }) => {
       console.log('Error fetching user playlists:', error);
     }
   };
-  
 
   const handleAddPlaylist = async (playlistTitle) => {
     try {
       const token = await AsyncStorage.getItem('token');
-  
+
       if (token) {
         const response = await axios.post(
           'https://soundmatch-api.onrender.com/playlist/create',
@@ -88,15 +85,15 @@ const Playlists = ({ navigation }) => {
             },
           }
         );
-  
+
         if (response.status === 201) {
           // If the playlist is created successfully, update the local state
           const newPlaylist = {
             title: response.data.playlist.title,
             music: [],
-            imageCover: response.data.playlist.imageCover // Use the default image for new playlists
+            imageCover: response.data.playlist.imageCover, // Use the default image for new playlists
           };
-  
+
           setPlaylists([...playlists, newPlaylist]);
           fetchUserPlaylists();
         } else {
@@ -108,7 +105,6 @@ const Playlists = ({ navigation }) => {
       console.log('Error adding a new playlist:', error);
     }
   };
-  
 
   const handleEditPlaylist = async (index, playlistTitle) => {
     try {
@@ -116,29 +112,29 @@ const Playlists = ({ navigation }) => {
       const token = await AsyncStorage.getItem('token');
 
       if (token) {
-      const response = await axios.put(`https://soundmatch-api.onrender.com/playlist/edit/${playlistIdToEdit}`, {
-        title: playlistTitle
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(response);
-      if(response.status === 200) {
-        setPlaylists((prevPlaylists) => {
-          const updatedPlaylists = [...prevPlaylists];
-          updatedPlaylists[index].title = response.data.playlist.title;
-          return updatedPlaylists;
-        });
+        const response = await axios.put(
+          `https://soundmatch-api.onrender.com/playlist/edit/${playlistIdToEdit}`,
+          {
+            title: playlistTitle,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(response);
+        if (response.status === 200) {
+          setPlaylists((prevPlaylists) => {
+            const updatedPlaylists = [...prevPlaylists];
+            updatedPlaylists[index].title = response.data.playlist.title;
+            return updatedPlaylists;
+          });
 
-
-
-        // Fetch the updated playlists from the API
-        fetchUserPlaylists();
-
-    }}
-  
+          // Fetch the updated playlists from the API
+          fetchUserPlaylists();
+        }
+      }
     } catch (error) {
       // Handle errors, e.g., show an error message to the user
       console.error(`Error editing playlist: ${error.message}`);
@@ -149,37 +145,38 @@ const Playlists = ({ navigation }) => {
     try {
       const token = await AsyncStorage.getItem('token');
       const playlistIdToDelete = playlists[index]._id;
-  
+
       if (token) {
-        const response = await axios.delete(`https://soundmatch-api.onrender.com/playlist/delete/${playlistIdToDelete}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
+        const response = await axios.delete(
+          `https://soundmatch-api.onrender.com/playlist/delete/${playlistIdToDelete}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
         if (response.status === 204) {
           // If the API call is successful, update the local state
           const updatedPlaylists = playlists.filter((playlist) => playlist._id !== playlistIdToDelete);
-  
+
           // Find the index of the "Liked Songs" playlist
-          const likedSongsIndex = updatedPlaylists.findIndex(
-            (playlist) => playlist.title === 'Liked songs'
-          );
-  
+          const likedSongsIndex = updatedPlaylists.findIndex((playlist) => playlist.title === 'Liked songs');
+
           // Move the "Liked Songs" playlist to the beginning if it exists
           if (likedSongsIndex !== -1) {
             const likedSongsPlaylist = {
               ...updatedPlaylists[likedSongsIndex],
               imageCover: 'https://t3.ftcdn.net/jpg/05/46/92/20/360_F_546922056_qLvb0l3rF2od0PdCtw3nsCi2KXjO8bD3.jpg', // Change the imageCover here
             };
-  
+
             // Remove the "Liked Songs" playlist from its original position
             updatedPlaylists.splice(likedSongsIndex, 1);
-  
+
             // Add the "Liked Songs" playlist at the beginning
             updatedPlaylists.unshift(likedSongsPlaylist);
           }
-  
+
           setPlaylists(updatedPlaylists);
           Alert.alert('Success', 'Playlist deleted successfully');
           fetchUserPlaylists();
@@ -196,80 +193,116 @@ const Playlists = ({ navigation }) => {
       // Fetch the playlist details including external URL
       const token = await AsyncStorage.getItem('token');
       const playlistId = playlists[index]._id;
-
+  
       if (token) {
         const response = await axios.get(`https://soundmatch-api.onrender.com/playlist/${playlistId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
+  
         const playlist = response.data.playlist;
-
-        // Set the selected playlist for sharing
-        setSelectedPlaylist(playlist);
-
-        // Show the modal with sharing options
-        setShareModalVisible(true);
+  
+        // Check if the playlist object has the required properties
+        if (playlist && playlist.externalUrl) {
+          // Set the selected playlist for sharing
+          setSelectedPlaylist(playlist);
+  
+          // Show the modal with writing to NFC tag option
+          setShareModalVisible(true);
+  
+          // Do not call handleNfcWrite here; it will be called when the user chooses to write to NFC tag
+        } else {
+          console.warn('Invalid playlist data:', playlist);
+        }
       }
     } catch (error) {
       console.error('Error fetching playlist details:', error);
     }
   };
-
+  
+  const handleShareOptionSelected = async (writeToNfcTag) => {
+    setShareModalVisible(false);
+  
+    if (writeToNfcTag) {
+      // If the user chooses to write to NFC tag, call handleNfcWrite
+      handleNfcWrite(selectedPlaylist?.externalUrl);
+    } else {
+      // If the user chooses to share normally, call handleNormalShare
+      handleNormalShare(selectedPlaylist?.externalUrl);
+    }
+  };
   const handleNormalShare = (externalUrl) => {
     Share.share({
       message: `Check out this playlist on Spotify: ${externalUrl}`,
     })
-      .catch(error => console.error(error));
+      .catch((error) => console.error(error));
     setShareModalVisible(false); // Close the modal after sharing
   };
 
-  const handleNfcShare = async (externalUrl, writeToTag) => {
+  const initializeNfc = async () => {
     try {
-      // Check if NFC technology is already in use
-      if (nfcSharing) {
-        console.warn('NFC request is already in progress. Please wait.');
-        return;
-      }
-  
-      // Set NFC sharing flag to true
-      setNfcSharing(true);
-  
-      // Request NFC technology
-      await NfcManager.requestTechnology(NfcTech.Ndef, {
-        alertMessage: 'Ready to share playlist via NFC!',
-      });
-  
-      if (writeToTag) {
-        // Write to NFC tag
-        const urlPayload = Ndef.uriRecord(externalUrl);
-        await NfcManager.writeNdefMessage([urlPayload]);
-  
-        // Reconnect after write
-        await NfcManager.setAlertMessageIOS('Playlist shared via NFC and written to NFC Tag!');
-        await NfcManager.registerTagEvent();
+      if (await NfcManager.isSupported()) {
+        // Initialize NFC manager
+        await NfcManager.start();
+        
+        // Request NFC technology
+        await NfcManager.requestTechnology(NfcTech.Ndef, {
+          alertMessage: 'Ready to write Spotify link to NFC Tag!',
+        });
       } else {
-        // Share via NFC without writing to tag
-        const urlPayload = Ndef.uriRecord(externalUrl);
-        await NfcManager.writeNdefMessage([urlPayload]);
-        Alert.alert('Success', 'Playlist shared via NFC!');
+        console.warn('NFC is not supported on this device');
       }
     } catch (ex) {
-      console.warn('NFC sharing error:', ex);
-    } finally {
-      // Cancel NFC technology request
-      NfcManager.cancelTechnologyRequest();
-  
-      // Reset the NFC sharing flag
-      setNfcSharing(false);
+      console.warn('NFC initialization error:', ex);
     }
   };
   
-  
 
+  const handleNfcWrite = async (playlist) => {
+    try {
+      if (!playlist || nfcWriteInProgress) {
+        console.warn('Invalid playlist data or NFC write in progress:', playlist);
+        return;
+      }
   
-
+      setNfcWriteInProgress(true);
+  
+      // Extract the playlist link from the provided playlist object
+      const playlistLink = playlist;
+      console.log('Playlist Link:', playlistLink);
+  
+      // Initialize NFC manager
+      await initializeNfc(true);
+  
+      // Request NFC technology
+      await NfcManager.requestTechnology(NfcTech.Ndef, {
+        alertMessage: 'Ready to write Spotify link to NFC Tag!',
+      });
+  
+      // Introduce a delay (e.g., 500 milliseconds) before NFC writing
+      await new Promise((resolve) => setTimeout(resolve, 500));
+  
+      // Create a custom text record for the playlist link
+      const textPayload = Ndef.textRecord(playlistLink);
+      console.log('Text Payload:', textPayload);
+  
+      // Writing to NFC tag
+      console.log('Writing to NFC tag');
+      await NfcManager.writeNdefMessage([textPayload]);
+      console.log('NFC write successful');
+  
+      // Show success message
+      Alert.alert('Success', 'Spotify link written to NFC Tag!');
+    } catch (ex) {
+      console.warn('NFC writing error:', ex);
+      Alert.alert('Error', 'Failed to write to NFC Tag. Please try again.');
+    } finally {
+      // Cancel NFC technology request
+      await NfcManager.cancelTechnologyRequest();
+      setNfcWriteInProgress(false);
+    }
+  };
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       {playlists.map((playlist, index) => {
@@ -281,7 +314,7 @@ const Playlists = ({ navigation }) => {
             key={index}
             style={{ padding: 5, backgroundColor: COLORS.purple, borderRadius: 5, marginBottom: 5 }}
           >
-            <Image source={{uri: playlist.imageCover}} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
+            <Image source={{ uri: playlist.imageCover }} style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
             <Text>{playlist.title}</Text>
             <Text style={{ marginTop: 3, opacity: 0.3, fontSize: 14 }}>{playlist.music.length} songs</Text>
             <View style={{ flexDirection: 'row', marginTop: 5 }}>
@@ -296,9 +329,9 @@ const Playlists = ({ navigation }) => {
                 </TouchableOpacity>
               )}
               <TouchableOpacity onPress={() => {
-              setSelectedPlaylist(playlists[index]);
-              setShareModalVisible(true);
-            }}>
+                setSelectedPlaylist(playlists[index]);
+                handleSharePlaylist(index);
+              }}>
                 <Text style={{ color: COLORS.blue }}>Share</Text>
               </TouchableOpacity>
             </View>
@@ -309,44 +342,29 @@ const Playlists = ({ navigation }) => {
         <Text style={{ color: COLORS.violet, letterSpacing: 1, fontWeight: 'bold', fontSize: 14, padding: 5 }}>+ Add New Playlist</Text>
       </TouchableOpacity>
       {/* Share Modal */}
-      <Modal
-  animationType="slide"
-  transparent={true}
-  visible={shareModalVisible}
-  onRequestClose={() => setShareModalVisible(false)}
->
-  <View style={styles.modalContainer}>
-    <View style={styles.modalContent}>
-      <TouchableOpacity
-        onPress={() => {
-          setShareModalVisible(false);
-          handleNormalShare(selectedPlaylist?.externalUrl);
-        }}
-        style={styles.modalButton}
-      >
-        <Text style={styles.modalButtonText}>Share normally</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          setShareModalVisible(false);
-          handleNfcShare(selectedPlaylist?.externalUrl, false);
-        }}
-        style={styles.modalButton}
-      >
-        <Text style={styles.modalButtonText}>Share via NFC</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          setShareModalVisible(false);
-          handleNfcShare(selectedPlaylist?.externalUrl, true);
-        }}
-        style={styles.modalButton}
-      >
-        <Text style={styles.modalButtonText}>Write to NFC Tag</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-</Modal>
+          <Modal
+      animationType="slide"
+      transparent={true}
+      visible={shareModalVisible}
+      onRequestClose={() => setShareModalVisible(false)}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <TouchableOpacity
+            onPress={() => handleShareOptionSelected(false)} // Share normally
+            style={styles.modalButton}
+          >
+            <Text style={styles.modalButtonText}>Share normally</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleShareOptionSelected(true)} // Write to NFC Tag
+            style={styles.modalButton}
+          >
+            <Text style={styles.modalButtonText}>Write to NFC Tag</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
       {/* Playlist Modal */}
       <PlaylistModal
         visible={modalVisible}
@@ -370,7 +388,7 @@ const Playlists = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create( {
+const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -396,4 +414,6 @@ const styles = StyleSheet.create( {
   },
 });
 
-export default Playlists
+export default Playlists;
+
+
