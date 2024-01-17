@@ -44,7 +44,8 @@ const Register = ({navigation}, props) => {
         navigation.navigate('GenderSelect');
         console.log(token);
     } catch (error) {
-        console.log(error.response.data.message);
+        console.log(error.response.data.message[0].msg);
+        Alert.alert(error.response.data.message[0].msg);
     }
     };
     return (
