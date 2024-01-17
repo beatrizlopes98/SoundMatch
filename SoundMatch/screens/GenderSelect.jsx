@@ -95,10 +95,7 @@ const GenderSelect = ({navigation}) => {
       ))}
     </View>
     <View style={{flex:1}}>
-        <Button title='DONE' onPress={saveSelectedGenres} ></Button>
-    </View>
-    <View style={{flex:1}}>
-        <Button title='NEXT PAGE' onPress={()=>navigation.navigate('MainTabs')} ></Button>
+        <Button style={{backgroundColor: COLORS.purple}} title='DONE' onPress={saveSelectedGenres} ></Button>
     </View>
     </View>
   );
