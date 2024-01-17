@@ -274,7 +274,7 @@ const Playlists = ({ navigation }) => {
       console.log('Playlist Link:', playlistLink);
   
       // Initialize NFC manager
-      await initializeNfc(true);
+      await initializeNfc();
   
       // Request NFC technology
       await NfcManager.requestTechnology(NfcTech.Ndef, {

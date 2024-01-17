@@ -55,20 +55,14 @@ const Login = ({navigation}, props) => {
   
       navigation.navigate('MainTabs');
       console.log(token);
+
     } catch (error) {
-      console.log(error.response.data.message);
+
+      console.log(error.response.data.message[0].msg);
+      Alert.alert(error.response.data.message[0].msg);
     }
   };
     
-  /* axios.post('https://soundmatch-api.onrender.com/login',{ email, password })
-    .then(function (response) {
-      navigation.navigate('MainTabs');
-      console.log(response.data.token);
-    })
-    .catch(function (error) {
-      console.log(error.response.data.message);
-    });
-  }; */
 
   return (
     <SafeAreaView style={{flex: 1}}>

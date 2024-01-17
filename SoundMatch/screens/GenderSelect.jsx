@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Button, StyleSheet, Dimensions, Alert } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import COLORS from '../constants/colors';
 
 
 const shuffleArray = (array) => {
@@ -88,7 +89,7 @@ const GenderSelect = ({navigation}) => {
           key={genre}
           title={genre}
           onPress={() => handleGenreSelection(genre)}
-          color={selectedGenres.includes(genre) ? 'blue' : 'gray'}
+          color={selectedGenres.includes(genre) ? COLORS.purple : 'gray'}
           style={{ position: 'absolute', ...getRandomPosition(index, shuffledGenres.length) }}
         />
       ))}
